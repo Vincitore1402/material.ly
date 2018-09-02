@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+	
+	<h3>{{ title }}</h3>
+		{% for p in paragraph %}
+		<p>{{ p }}</p>
+		{% endfor %}
+		
+		{% if pageType == 'about' %}
+		<p>Contact box thing is here</p>
+		{% else %}
+		<p>not about page</p>
+		{% endif %}
+		
+		
+
+		
+
+		
+		<div id={{ chartID|safe }} class="chart" style="height: 500px;"></div>
+		<script>
+			var chart_id = {{ chartID|safe }}
+			var series = {{ series|safe }}
+			var title = {{ title|safe }}
+			var xAxis = {{ xAxis|safe }}
+			var yAxis = {{ yAxis|safe }}
+			var chart = {{ chart|safe }}
+		</script>
+			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+			<script src="http://code.highcharts.com/highcharts.js"></script>
+			<script src="../static/graph.js"></script>
+	
+	
+{% endblock %}

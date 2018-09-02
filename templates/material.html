@@ -1,0 +1,177 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="text-center">
+	<!-- <h1>{{material.name}}</h1> -->
+	<h1>{{material.classification}} {{material.marka}}</h1>
+	<!-- <small>{{material.name}}</small> -->
+	<hr>
+	<div>
+		<h3>Применение:</h3>
+		<p class="">{{material.primenenie}}</p>
+		
+		{% if material.dopolnenie %}
+			<p>{{material.dopolnenie}}</p>
+		{% endif %}
+	</div>
+	<hr>
+	{% if elements %}
+	<h3>Химический состав материала:</h3>
+	<table class="table table-striped table-responsive-md">
+		{% for element in elements  %}
+			<th class="text-center">{{element}}</th>
+		{% endfor %}
+		<tr>
+		{% for conc in concetration  %}
+			<td>{{conc}} %</td>
+		{% endfor %}
+		<tr>
+	</table>
+	<form method = "POST" action="/chemical_search/{{material.id}}">
+      <p><input type="submit" class="btn btn-warning"  value="Найти похожие по хим. составу"></p>
+    </form>
+	<hr>
+	{% endif %}
+	{% if critical_temperature %}
+	<h3>Температура критических точек материала:</h3>
+	<table class="table table-striped table-responsive-md">
+		<tr>{{critical_temperature.critical_temperature}}</tr>
+	</table>
+	<hr>
+	{% endif %}
+
+	{% if techno %}
+	<h3>Технологические свойства материала:</h3>
+	<table class="table table-striped table-responsive-md">
+		{% for tech in techno  %}
+			<tr>
+				<td><strong>{{tech.property_name}}</strong> {{tech.property_value}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<hr>
+	{% endif %}
+
+	{% if termo_mode %}
+	<h3>Режимы термической обработки материала:</h3>
+	<table class="table table-striped table-responsive-md">
+		{% for ter in termo_mode  %}
+			<tr>
+				<td>{{ter.property}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<hr>
+	{% endif %}
+	
+	{% if mech %}
+	<h3>Механические свойства материала при Т=20<sup>o</sup>С:</h3>
+	<table class="table table-striped table-responsive-md">
+		<th class="text-center">Сортамент</th>
+		<th class="text-center">Размер</th>
+		<th class="text-center">Напряжение</th>
+		<th class="text-center"><font face="symbol">s</font> <sub>в</sub></th>
+		<th class="text-center"><font face="symbol">s</font> <sub>т</sub></th>
+		<th class="text-center"><font face="symbol">d</font> <sub>5</sub></th>
+		<th class="text-center"><font face="symbol">y</font></th>
+		<th class="text-center">KCU</th>
+		<th class="text-center">Термообработка</th>
+		<tr>
+			<td><small>-</small></td>
+			<td><small>мм</small></td>
+			<td><small>-</small></td>
+			<td><small>МПа</small></td>
+			<td><small>МПа</small></td>
+			<td><small>%</small></td>
+			<td><small>%</small></td>
+			<td><small>кДж/м<sup>2</sup></small></td>
+			<td><small>-</small</td>
+		</tr>
+		{% for m in mech  %}
+			<tr>
+				<td>{{m.sortament}}</td>
+				<td>{{m.razmer}}</td>
+				<td>{{m.napr}}</td>
+				<td>{{m.sigma_b}}</td>
+				<td>{{m.sigma_t}}</td>
+				<td>{{m.delta_5}}</td>
+				<td>{{m.psi}}</td>
+				<td>{{m.KCU}}</td>
+				<td>{{m.termo_obrab}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<hr>
+	{% endif %}
+	
+	{% if table6 %}
+	<table class="table table-striped table-responsive-md">
+		{% for t in table6  %}
+			<tr>
+				<td><strong>{{t.property}}</strong></td>
+			</tr>
+		{% endfor %}
+	</table>
+	<hr>
+	{% endif %}
+
+	{% if physic %}
+	<h3>Физические свойства материала:</h3>
+	<table class="table table-striped table-responsive-md">
+		<th class="text-center">T</th>
+		<th class="text-center">E 10<sup>-5</sup></th>
+		<th class="text-center"><font face="symbol">a</font> 10<sup>6</sup></th>
+		<th class="text-center"><font face="symbol">l</font></th>
+		<th class="text-center"><font face="symbol">r</font></th>
+		<th class="text-center">C</th>
+		<th class="text-center">R 10<sup>9</sup></th>
+		<tr>
+			<td><small>Град</small></td>
+			<td><small>МПа</small></td>
+			<td><small>1/Град</small></td>
+			<td><small>Вт/(м·Град)</small></td>
+			<td><small>кг/м<sup>3</sup></small></td>
+			<td><small>Дж/(кг·Град)</small></td>
+			<td><small>Ом·м</small></td>
+		</tr>
+		{% for ph in physic  %}
+			<tr>
+				<td>{{ph.T}}</td>
+				<td>{{ph.E}}</td>
+				<td>{{ph.alpha}}</td>
+				<td>{{ph.lambda}}</td>
+				<td>{{ph.ro}}</td>
+				<td>{{ph.C}}</td>
+				<td>{{ph.R}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<hr>
+	{% endif %}
+	{% if mech %}
+	<h5><strong>Обозначения:</strong></h5>
+	<h6><strong>Механические свойства:</strong></h6>
+	<p><strong><font face="symbol">s</font> <sub>в</sub></strong> - Предел кратковременной прочности , <strong>МПа</strong></p>
+	<p><strong><font face="symbol">s</font> <sub>т</sub></strong> - Предел пропорциональности (предел текучести для остаточной деформации), <strong>МПа</strong></p>
+	<p><strong><font face="symbol">d</font> <sub>5</sub></strong> - Относительное удлинение при разрыве , <strong>%</strong> </p>
+	<p><strong><font face="symbol">y</font></strong> - Относительное сужение ,  <strong>%</strong> </p>
+	<p><strong>KCU</strong> - Ударная вязкость ,  <strong>кДж/м<sup>2</sup></strong></p>
+	<p><strong>HB</strong> - Твердость по Бринеллю , <strong>МПа</strong></p>
+	{% endif %}
+
+	{% if physic %}
+	<br>
+	<!-- <h5><strong>Обозначения:</strong></h5> -->
+	<h6><strong>Физические свойства:</strong></h6>
+	<!-- TO DO!!! -->
+	<!-- <p><strong><font face="symbol">s</font> <sub>в</sub></strong> - Предел кратковременной прочности , <strong>МПа</strong></p>
+	<p><strong><font face="symbol">s</font> <sub>т</sub></strong> - Предел пропорциональности (предел текучести для остаточной деформации), <strong>МПа</strong></p>
+	<p><strong><font face="symbol">d</font> <sub>5</sub></strong> - Относительное удлинение при разрыве , <strong>%</strong> </p>
+	<p><strong><font face="symbol">y</font></strong> - Относительное сужение ,  <strong>%</strong> </p>
+	<p><strong>KCU</strong> - Ударная вязкость ,  <strong>кДж/м<sup>2</sup></strong></p>
+	<p><strong>HB</strong> - Твердость по Бринеллю , <strong>МПа</strong></p> -->
+	{% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+	<div class="col-md-6">
+		{% for comp in comp1 %}
+			<p>{{comp}}</p>
+		{% endif %}
+	</div>
+{% endblock %}

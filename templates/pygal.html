@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+	<body class="body">
+
+	  <div class="container text-center" align="right">
+			<label class="btn btn-primary">
+					{{title}}	
+			</label>
+			<embed class="image-fluid" type="image/svg+xml" src={{graph_data|safe}} style='max-width:900px;max-height:600px'/>
+	  </div>
+	</body>
+	
+	
+	
+{% endblock %}

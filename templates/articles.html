@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+	<div class="text-center">
+		<h1>Articles</h1>
+		<div>
+				<ul class="list-group d-flex flex-row flex-wrap">
+					{% for article in articles %}
+						<li class="list-group-item col-md-4"><a href="article/{{article.id}}">{{article.title}}</a></li>
+					{% endfor %}
+				</ul>
+		</div>
+	</div>
+{% endblock %}
