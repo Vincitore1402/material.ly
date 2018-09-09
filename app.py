@@ -1,5 +1,4 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, make_response, send_file
-from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
@@ -26,33 +25,20 @@ from io import StringIO
 import base64
 import csv
 
+import sys
+sys.path.append('./config')
+# Import config
+import config
+sys.path.remove('./config')
+
 app = Flask(__name__)
 app.secret_key = 'secret123'
 
 def getConn():
-	conn = MySQLdb.connect(host='localhost', user='root', passwd='root', db='rloveshhenko$mydbtest',charset='utf8',cursorclass=MySQLdb.cursors.DictCursor)
+	conn = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD, db=config.DB_NAME,charset=config.DEFAULT_CHARSET,cursorclass=MySQLdb.cursors.DictCursor)
 	return conn
 
-#Config MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'mydbtest'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-#init MySQL
-mysql = MySQL(app)
-
-
 # Data visualisation Tests
-
-# Saving pic and then render to html
-@app.route('/matplot')
-def fig():
-	data = getDataForLearning()
-	fig = manifoldLearning.startLearning(data)
-	fig.savefig('static/img/matplot.png')
-	return render_template('images.html')
-
 
 @app.route("/manif_show")
 def manif_plot():
@@ -161,14 +147,6 @@ def getDataForLearning():
 		'ids': ids
 	}
 
-@app.route('/graph')
-def graph(chartID = 'chart_ID', chart_type = 'line', chart_height = 500):
-	chart = {"renderTo": chartID, "type": chart_type, "height": chart_height,}
-	series = [{"name": 'Label1', "data": [1,2,3]}, {"name": 'Label2', "data": [4, 5, 6]}, ]
-	title = {"text": 'My Title'}
-	xAxis = {"categories": ['xAxis Data1', 'xAxis Data2', 'xAxis Data3']}
-	yAxis = {"title": {"text": 'yAxis Label'}}
-	return render_template('graph.html', chartID=chartID, chart=chart, series=series, title=title, xAxis=xAxis, yAxis=yAxis)
 
 def get_sigma_t_for_chart_C():
 	conn = getConn()
@@ -391,7 +369,6 @@ def write_to_db(data):
 			continue;
 	conn.close()
 
-@app.route('/compose')
 def composeDataForVisualization():
 
 	#data = loadFromFile('chemDataWithAllElements.txt')
@@ -447,14 +424,19 @@ def pygalexample():
 		return (str(e))
 
 # Index
-@app.route('/')
-def index():
-	return render_template('home.html')
+# @app.route('/')
+# def index():
+# 	return render_template('home.html')
+sys.path.append('./routes')
+from routes.static_pages import index_page, about_page
+app.register_blueprint(index_page)
+app.register_blueprint(about_page)
 
-# About
-@app.route('/about')
-def about():
-	return render_template('about.html')
+
+# # About
+# @app.route('/about')
+# def about():
+# 	return render_template('about.html')
 
 # Articles
 @app.route('/articles')

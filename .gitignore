@@ -6,3 +6,5 @@ data.csv
 manifData.txt
 manifPygal.txt
 numpyData.csv
+config/__pycache__
+routes/__pycache__
