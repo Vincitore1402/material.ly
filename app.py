@@ -24,8 +24,8 @@ import pygal
 from io import StringIO
 import base64
 import csv
-
 import sys
+
 sys.path.append('./config')
 # Import config
 import config
@@ -378,6 +378,7 @@ def composeDataForVisualization():
 @app.route('/visualization')
 def pygalexample():
 
+
 	# print (data)
 	# composeDataForChart()
 	#data = loadFromFile('chemDataWithAllElements.txt')
@@ -423,50 +424,20 @@ def pygalexample():
 	except	Exception as e:
 		return (str(e))
 
-# Index
-# @app.route('/')
-# def index():
-# 	return render_template('home.html')
+
+from login_check import is_logged_in
+
 sys.path.append('./routes')
-from routes.static_pages import index_page, about_page
+from static_pages import index_page, about_page
+from articles_routes import articles, article, add_article, edit_article, delete_article
+
 app.register_blueprint(index_page)
 app.register_blueprint(about_page)
-
-
-# # About
-# @app.route('/about')
-# def about():
-# 	return render_template('about.html')
-
-# Articles
-@app.route('/articles')
-def articles():
-	conn = getConn()
-	cur = conn.cursor()
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles")
-
-	articles = cur.fetchall()
-	cur.close()
-	if result > 0:
-		return render_template('articles.html', articles = articles)
-	else:
-		msg = 'No Articles Found'
-		return render_template('articles.html', msg = msg)
-
-# Single Article
-@app.route('/article/<string:id>/')
-def article(id):
-	conn = getConn()
-	cur = conn.cursor()
-
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s", [id])
-
-	article = cur.fetchone()
-	cur.close()
-
-	return render_template('article.html', article = article)
-
-
+app.register_blueprint(articles)
+app.register_blueprint(article)
+app.register_blueprint(add_article)
+app.register_blueprint(edit_article)
+app.register_blueprint(delete_article)
 
 #RegisterForm class
 class RegisterForm(Form):
@@ -542,16 +513,6 @@ def login():
 		cur.close()
 	return render_template('login.html')
 
-# Check if user logged in
-def is_logged_in(f):
-	@wraps(f)
-	def wrap(*args, **kwargs):
-		if 'logged_in' in session:
-			return f(*args, **kwargs)
-		else:
-			flash('Unauthorized, Please login', 'danger')
-			return 	redirect(url_for('login'))
-	return wrap
 
 # Logout
 @app.route('/logout')
@@ -576,82 +537,6 @@ def dashboard():
 	else:
 		msg = 'No Articles Found'
 		return render_template('dashboard.html', msg = msg)
-
-
-# Article Form class
-class ArticleForm(Form):
-	title = StringField('Title', [validators.Length(min = 1, max = 200)])
-	body = TextAreaField('Body', [validators.Length(min = 40)])
-
-@app.route('/add_article/', methods = ['GET', 'POST'])
-@is_logged_in
-def add_article():
-	form = ArticleForm(request.form)
-	if request.method == 'POST' and form.validate():
-		title = form.title.data
-		body = form.body.data
-
-		conn = getConn()
-		cur = conn.cursor()
-		cur.execute("INSERT INTO rloveshhenko$mydbtest.articles(title,body,author) VALUES(%s, %s, %s)", (title,body,session['username']))
-		conn.commit()
-		cur.close()
-		flash('Article Created', 'success')
-		return redirect(url_for('dashboard'))
-	return render_template('add_article.html', form = form)
-
-# Edit article
-@app.route('/edit_article/<string:id>', methods = ['GET', 'POST'])
-@is_logged_in
-def edit_article(id):
-	conn = getConn()
-	cur = conn.cursor()
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s", (id,session['username']))
-	article = cur.fetchone()
-	if (not article):
-		flash('Permission denied', 'danger')
-		return redirect(url_for('dashboard'))
-	# Get form
-	form = ArticleForm(request.form)
-	# Populate form fields
-	form.title.data = article['title']
-	form.body.data = article['body']
-
-	if request.method == 'POST' and form.validate():
-		title = request.form['title']
-		body = request.form['body']
-		# DB cursor
-		conn = getConn()
-		cur = conn.cursor()
-		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s", (id,session['username']))
-		article = cur.fetchone()
-		if (not article):
-			flash('Permission denied', 'danger')
-			return redirect(url_for('dashboard'))
-		cur.execute("UPDATE rloveshhenko$mydbtest.articles SET title = %s, body = %s WHERE id = %s", (title, body, id))
-		conn.commit()
-		cur.close()
-		flash('Article Updated', 'success')
-		return redirect(url_for('dashboard'))
-	return render_template('edit_article.html', form = form)
-
-# Delete article
-@app.route('/delete_article/<string:id>', methods = ['POST'])
-@is_logged_in
-def delete_article(id):
-	# Delete from DB
-	conn = getConn()
-	cur = conn.cursor()
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s", (id,session['username']))
-	article = cur.fetchone()
-	if (not article):
-		flash('Permission denied', 'danger')
-		return redirect(url_for('dashboard'))
-	cur.execute("DELETE FROM rloveshhenko$mydbtest.articles WHERE id = %s", [id])
-	conn.commit()
-	cur.close()
-	flash('Article Deleted', 'success')
-	return redirect(url_for('dashboard'))
 
 # Materials
 MATERIALS_PER_PAGE = 50
