@@ -1,6 +1,5 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, make_response, send_file
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
-from passlib.hash import sha256_crypt
 from functools import wraps
 
 
@@ -430,97 +429,26 @@ from login_check import is_logged_in
 sys.path.append('./routes')
 from static_pages import index_page, about_page
 from articles_routes import articles, article, add_article, edit_article, delete_article
+from materials_routes import materials, material
+
+from auth_routes import register, login, logout
 
 app.register_blueprint(index_page)
 app.register_blueprint(about_page)
+
 app.register_blueprint(articles)
 app.register_blueprint(article)
 app.register_blueprint(add_article)
 app.register_blueprint(edit_article)
 app.register_blueprint(delete_article)
 
-#RegisterForm class
-class RegisterForm(Form):
-	name = StringField('Name', [validators.Length(min = 1, max = 50)])
-	username = StringField('Username', [validators.Length(min = 4, max = 25)])
-	email = StringField('Email', [validators.Length(min = 6, max = 50)])
-	password = PasswordField('Password',[
-		validators.DataRequired(),
-		validators.EqualTo('confirm', message = 'Passwords do not match')
-	])
-	confirm = PasswordField('Confirm Password')
+app.register_blueprint(materials)
+app.register_blueprint(material)
 
-# Register
-@app.route('/register', methods = ['GET', 'POST'])
-def register():
-	form = RegisterForm(request.form)
-	if request.method == 'POST' and form.validate():
-		name = form.name.data
-		email = form.email.data
-		username = form.username.data
-		password = sha256_crypt.encrypt(str(form.password.data))
+app.register_blueprint(register)
+app.register_blueprint(login)
+app.register_blueprint(logout)
 
-		#Create cursor
-		conn = getConn()
-		cur = conn.cursor()
-		#Execute query
-		user_result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.users WHERE username = %s", [username])
-		if user_result > 0:
-			flash('User already exist!', 'danger')
-			return render_template('register.html', form = form)
-		else:
-			cur.execute("INSERT INTO rloveshhenko$mydbtest.users(name, email, username, password) VALUES(%s, %s, %s, %s)", (name, email, username, password))
-			#Commit to DB
-			conn.commit()
-		#Close the connection
-		cur.close()
-
-		flash('You are now registered and can log in', 'success')
-		return redirect(url_for('index'))
-
-	return render_template('register.html', form = form)
-@app.route('/login', methods = ['GET', 'POST'])
-def login():
-	if request.method == 'POST':
-		#Ger form fields
-		username = request.form['username']
-		password_candidate = request.form['password']
-		#Create cursor
-		conn = getConn()
-		cur = conn.cursor()
-		#Get user by username
-		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.users WHERE username = %s", [username])
-
-		if result > 0:
-			#Get stored hash
-			data = cur.fetchone()
-			password = data['password']
-			#Compare passwords
-			if sha256_crypt.verify(password_candidate, password):
-				session['logged_in'] = True
-				session['username'] = username
-
-				flash('You are now logged in', 'success')
-				return redirect(url_for('materials', num = 1))
-
-			else:
-				flash('Invalid login', 'danger')
-				return 	redirect(url_for('login'))
-
-		else:
-			flash('Username not found', 'danger')
-			return 	redirect(url_for('login'))
-		cur.close()
-	return render_template('login.html')
-
-
-# Logout
-@app.route('/logout')
-@is_logged_in
-def logout():
-	session.clear()
-	flash('You are now logged out', 'info')
-	return redirect(url_for('login'))
 # Dashboard
 @app.route('/dashboard')
 @is_logged_in
@@ -537,94 +465,6 @@ def dashboard():
 	else:
 		msg = 'No Articles Found'
 		return render_template('dashboard.html', msg = msg)
-
-# Materials
-MATERIALS_PER_PAGE = 50
-@app.route('/materials/', defaults={'num': 1})
-@app.route('/materials/page/<int:num>')
-def materials(num):
-	app.config['MYSQL_DB'] = 'mydbtest'
-	conn = getConn()
-	cur = conn.cursor()
-	total = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info")
-	#print (total)
-	total_page = (int)(total / MATERIALS_PER_PAGE) + 1
-	#print (total_page)
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info limit %s,%s", ((num-1)*MATERIALS_PER_PAGE, MATERIALS_PER_PAGE))
-
-	#print ((num-1)*MATERIALS_PER_PAGE)
-	if result > 0:
-		materials = cur.fetchall()
-		cur.close()
-		return render_template('materials.html', materials = materials, page = num, total = total_page)
-	else:
-		msg = 'No Materials Found'
-		cur.close()
-		return render_template('materials.html', msg = msg)
-
-# Material
-@app.route('/material/<string:id>')
-def material(id):
-	# Creating cursor and getting main info about material
-	app.config['MYSQL_DB'] = 'mydbtest'
-	conn = getConn()
-	cur = conn.cursor()
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info WHERE id = %s", [id])
-	material = cur.fetchone()
-
-	# Getting chemical composition
-	result_chem = cur.execute("SELECT * FROM rloveshhenko$mydbtest.chemical_composition WHERE main_info_id = %s", [id])
-	chem_composition = cur.fetchall()
-	chem_elem = []
-	chem_concetration = []
-
-	if result_chem > 0:
-		for number in chem_composition:
-			chem_concetration.append(number['concetration'])
-		for number in chem_composition:
-			if number['atomic_Number'] == -1:
-				chem_elem.append('Примесей')
-			else:
-				cur.execute("SELECT * FROM rloveshhenko$mydbtest.periodic_table WHERE atomic_Number = %s", [number['atomic_Number']])
-				data = cur.fetchone()
-				chem_elem.append(data['symbol'])
-
-	#print (chem_elem)
-	#print (chem_concetration)
-
-	# Getting critical temperature
-	result_crit = cur.execute("SELECT * FROM rloveshhenko$mydbtest.critical_temperature WHERE main_info_id = %s", [id])
-	critical_temperature = cur.fetchone()
-
-	# Getting techno properties
-	result_techno = cur.execute("SELECT * FROM rloveshhenko$mydbtest.techno_properties WHERE main_info_id = %s", [id])
-	techno = cur.fetchall()
-
-	# Getting termo-mode
-	result_termo_mode = cur.execute("SELECT * FROM rloveshhenko$mydbtest.termo_mode WHERE main_info_id = %s", [id])
-	termo_mode = cur.fetchall()
-
-	# Getting mechanical properties
-	result_mech = cur.execute("SELECT * FROM rloveshhenko$mydbtest.mechanical_properties WHERE main_info_id = %s", [id])
-	mech = cur.fetchall()
-
-	# Getting table6 (DELETE SPACES - TOO MUCH)
-	result_table6 = cur.execute("SELECT * FROM rloveshhenko$mydbtest.table6 WHERE main_info_id = %s", [id])
-	table6 = cur.fetchall()
-
-	# Getting physical properties
-	result_physic =  cur.execute("SELECT * FROM rloveshhenko$mydbtest.physical_properties WHERE main_info_id = %s", [id])
-	physic = cur.fetchall()
-
-	cur.close()
-
-
-	if result > 0:
-		return render_template('material.html', material = material, elements = chem_elem, concetration = chem_concetration,
-		critical_temperature = critical_temperature, techno = techno, termo_mode = termo_mode, mech = mech, table6 = table6, physic = physic)
-	else:
-		msg = 'Material Doesnt Exist'
-		return  redirect(url_for('materials'))
 
 # Default search by name
 @app.route('/search', methods = ['POST'])
@@ -671,8 +511,6 @@ def simple_Compare(chem_composition_first,chem_composition_second):
 def chemical_Compare(chem_composition_first, chemical_composition_others, other_materials, cur):
 
 	return 0
-
-
 
 
 def getChemicalComposition(id,chem_composition_others):
