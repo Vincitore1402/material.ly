@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, abort, request, session, flash, re
 import sys
 sys.path.append('../')
 from db import getConnection
-from login_check import is_logged_in
+from util import is_logged_in
 sys.path.remove('../')
 
 sys.path.append('./config')
@@ -11,7 +11,6 @@ import config
 sys.path.remove('./config')
 
 materials = Blueprint('materials', __name__,template_folder='templates')
-material = Blueprint('material', __name__,template_folder='templates')
 
 # Materials
 @materials.route('/materials/', defaults={'num': 1})
@@ -36,7 +35,7 @@ def allMaterials(num):
 		return render_template('materials.html', msg = msg)
 
 # Material
-@material.route('/material/<string:id>')
+@materials.route('/material/<string:id>')
 def singleMaterial(id):
 	conn = getConnection()
 	cur = conn.cursor()

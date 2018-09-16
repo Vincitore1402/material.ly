@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, abort, request, session, flash, redirect, url_for
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+from forms import ArticleForm
 
 import sys
 sys.path.append('../')
 from db import getConnection
-from login_check import is_logged_in
+from util import is_logged_in
 sys.path.remove('../')
 
 articles = Blueprint('articles', __name__,template_folder='templates')
@@ -40,11 +40,6 @@ def single_article(id):
 	cur.close()
 
 	return render_template('article.html', article = article)
-
-# Article Form class
-class ArticleForm(Form):
-	title = StringField('Title', [validators.Length(min = 1, max = 200)])
-	body = TextAreaField('Body', [validators.Length(min = 40)])
 
 @add_article.route('/add_article/', methods = ['GET', 'POST'])
 @is_logged_in

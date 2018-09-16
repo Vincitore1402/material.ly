@@ -1,31 +1,18 @@
 from flask import Blueprint, render_template, abort, request, session, flash, redirect, url_for
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
+from forms import RegisterForm
 
 import sys
 sys.path.append('../')
 from db import getConnection
-from login_check import is_logged_in
+from util import is_logged_in
 sys.path.remove('../')
 
-register = Blueprint('register', __name__,template_folder='templates')
-login = Blueprint('login', __name__,template_folder='templates')
-logout = Blueprint('logout', __name__,template_folder='templates')
-
-#RegisterForm class
-class RegisterForm(Form):
-	name = StringField('Name', [validators.Length(min = 1, max = 50)])
-	username = StringField('Username', [validators.Length(min = 4, max = 25)])
-	email = StringField('Email', [validators.Length(min = 6, max = 50)])
-	password = PasswordField('Password',[
-		validators.DataRequired(),
-		validators.EqualTo('confirm', message = 'Passwords do not match')
-	])
-	confirm = PasswordField('Confirm Password')
+auth = Blueprint('auth', __name__, template_folder='templates')
 
 # Register
-@register.route('/register', methods = ['GET', 'POST'])
-def registerUser():
+@auth.route('/register', methods = ['GET', 'POST'])
+def register():
 	form = RegisterForm(request.form)
 	if request.method == 'POST' and form.validate():
 		name = form.name.data
@@ -53,8 +40,8 @@ def registerUser():
 
 	return render_template('register.html', form = form)
 
-@login.route('/login', methods = ['GET', 'POST'])
-def logIn():
+@auth.route('/login', methods = ['GET', 'POST'])
+def login():
 	if request.method == 'POST':
 		#Ger form fields
 		username = request.form['username']
@@ -79,21 +66,21 @@ def logIn():
 
 			else:
 				flash('Invalid login', 'danger')
-				return 	redirect(url_for('login.logIn'))
+				return 	redirect(url_for('auth.login'))
 
 		else:
 			flash('Username not found', 'danger')
-			return 	redirect(url_for('login.logIn'))
+			return 	redirect(url_for('auth.login'))
 		cur.close()
 	return render_template('login.html')
 
 # Logout
-@logout.route('/logout')
+@auth.route('/logout')
 @is_logged_in
-def logOut():
+def logout():
 	session.clear()
 	flash('You are now logged out', 'info')
-	return redirect(url_for('login.logIn'))
+	return redirect(url_for('auth.login'))
 
 
 
