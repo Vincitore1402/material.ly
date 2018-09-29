@@ -5,3 +5,5 @@ DB_NAME = 'rloveshhenko$mydbtest'
 DEFAULT_CHARSET = 'utf8'
 
 MATERIALS_PER_PAGE = 50
+
+SECRET_KEY = 'secret123'

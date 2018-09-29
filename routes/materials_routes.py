@@ -7,9 +7,7 @@ from services.mysql_service import getConnection
 
 sys.path.remove('../')
 
-sys.path.append('./config')
-import config
-sys.path.remove('./config')
+import config.config as config
 
 materials = Blueprint('materials', __name__,template_folder='templates')
 

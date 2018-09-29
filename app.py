@@ -5,13 +5,9 @@ import MySQLdb
 import MySQLdb.cursors
 from flask import Flask, render_template, request
 
-sys.path.append('./config')
-# Import config
-import config
-sys.path.remove('./config')
+import config.config as config
 
 app = Flask(__name__)
-app.secret_key = 'secret123'
 
 def getConn():
 	conn = MySQLdb.connect(host=config.DB_HOST, user=config.DB_USER, passwd=config.DB_PASSWORD, db=config.DB_NAME,charset=config.DEFAULT_CHARSET,cursorclass=MySQLdb.cursors.DictCursor)
@@ -285,17 +281,17 @@ def composeDataForVisualization():
 
 
 sys.path.append('./routes')
-from static_pages import index_page, about_page
-from articles_routes import articles
-from materials_routes import materials
+from routes.static_pages import index_page, about_page
+from routes.articles_routes import articles
+from routes.materials_routes import materials
 
-from auth_routes import auth
+from routes.auth_routes import auth
 
-from visualizations_routes import visualization
+from routes.visualizations_routes import visualization
 
-from dashboard import dashboard_route
+from routes.dashboard import dashboard_route
 
-from search_routes import searches
+from routes.search_routes import searches
 
 app.register_blueprint(index_page)
 app.register_blueprint(about_page)
@@ -318,5 +314,6 @@ def page_not_found(e):
 
 # Main Part
 if __name__ == '__main__':
-	app.secret_key = 'secret123'
+	import config.config as config
+	app.secret_key = config.SECRET_KEY
 	app.run(debug=True)
