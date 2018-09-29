@@ -1,11 +1,13 @@
-from flask import Blueprint, render_template, abort, request, session, flash, redirect, url_for
+import sys
+
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for
 from passlib.hash import sha256_crypt
+
 from forms import RegisterForm
 
-import sys
 sys.path.append('../')
-from db import getConnection
-from util import is_logged_in
+from services.mysql_service import getConnection
+from utils.common_utils import is_logged_in
 sys.path.remove('../')
 
 auth = Blueprint('auth', __name__, template_folder='templates')

@@ -10,7 +10,7 @@ def is_logged_in(f):
 			return f(*args, **kwargs)
 		else:
 			flash('Unauthorized, Please login', 'danger')
-			return 	redirect(url_for('login.login'))
+			return 	redirect(url_for('auth.login'))
 	return wrap
 
 # Read object from json file

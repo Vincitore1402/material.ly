@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, abort, request, session, flash, redirect, url_for
-
 import sys
+
+from flask import Blueprint, render_template, redirect, url_for
+
 sys.path.append('../')
-from db import getConnection
-from util import is_logged_in
+from services.mysql_service import getConnection
+
 sys.path.remove('../')
 
 sys.path.append('./config')

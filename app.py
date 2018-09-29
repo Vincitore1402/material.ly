@@ -1,29 +1,9 @@
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, make_response, send_file
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
-from functools import wraps
-
-
-from flask import Blueprint
-from operator import attrgetter
-import MySQLdb
-import MySQLdb.cursors
-import math
-import time
-
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import matplotlib.cm as cm
-import numpy as np
-import io
-
-import plot_compare_methods as manifoldLearning
-
-import pygal
-from io import StringIO
-import base64
 import csv
 import sys
+
+import MySQLdb
+import MySQLdb.cursors
+from flask import Flask, render_template, request
 
 sys.path.append('./config')
 # Import config
@@ -303,11 +283,10 @@ def composeDataForVisualization():
 	# write_csv('data.csv',data)
 	write_to_db(getChemicalCompositionData())
 
-from util import is_logged_in
 
 sys.path.append('./routes')
 from static_pages import index_page, about_page
-from articles_routes import articles, article, add_article, edit_article, delete_article
+from articles_routes import articles
 from materials_routes import materials
 
 from auth_routes import auth
@@ -316,14 +295,12 @@ from visualizations_routes import visualization
 
 from dashboard import dashboard_route
 
+from search_routes import searches
+
 app.register_blueprint(index_page)
 app.register_blueprint(about_page)
 
 app.register_blueprint(articles)
-app.register_blueprint(article)
-app.register_blueprint(add_article)
-app.register_blueprint(edit_article)
-app.register_blueprint(delete_article)
 
 app.register_blueprint(materials)
 
@@ -333,104 +310,11 @@ app.register_blueprint(visualization)
 
 app.register_blueprint(dashboard_route)
 
+app.register_blueprint(searches)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-
-# Default search by name
-@app.route('/search', methods = ['POST'])
-def default_search():
-	if request.method == 'POST':
-		name = request.form['mat_name']
-		conn = getConn()
-		cur = conn.cursor()
-		total = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info WHERE marka like %s or marka = %s", ("%" + name + "%","%" + name + "%"))
-		materials = cur.fetchall()
-		cur.close()
-		return render_template('default_search.html', materials = materials, name = name)
-
-# Compare to materials via their chemical compositons
-# Return index of similarity
-def simple_Compare(chem_composition_first,chem_composition_second):
-	sum = 0
-	sum_container = []
-	element_container = []
-
-	for chem_2 in chem_composition_second:
-
-		for chem_1 in chem_composition_first:
-
-			if (chem_2['atomic_Number'] == chem_1['atomic_Number']):
-				sum_container.append((chem_1['average'] - chem_2['average']) ** 2)
-				element_container.append(chem_1['atomic_Number'])
-				break
-
-	for chem_1 in chem_composition_first:
-		if (chem_1['atomic_Number'] not in element_container):
-			sum_container.append((chem_1['average']) ** 2)
-
-	for chem_2 in chem_composition_second:
-		if (chem_2['atomic_Number'] not in element_container):
-			sum_container.append((chem_2['average']) ** 2)
-
-	for el in sum_container:
-		sum += el
-
-	index = math.sqrt(sum)
-	return index
-
-def chemical_Compare(chem_composition_first, chemical_composition_others, other_materials, cur):
-
-	return 0
-
-
-def getChemicalComposition(id,chem_composition_others):
-	chem_composition = []
-	for material in chem_composition_others:
-		if material['main_info_id'] == id:
-			chem_composition.append(material)
-	return chem_composition
-
-
-def getKey(material):
-    return material['index']
-
-@app.route('/chemical_search/<int:id>', methods = ['POST', 'GET'])
-def chemical_search(id):
-	conn = getConn()
-	cur = conn.cursor()
-	name_res = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info where id = %s", [id])
-	base_material = cur.fetchone()
-
-
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info where id != %s", [id])
-	other_materials = cur.fetchall()
-
-	result_first = cur.execute("SELECT atomic_Number, average FROM rloveshhenko$mydbtest.chemical_composition WHERE main_info_id = %s", [id])
-	chem_composition_first = cur.fetchall()
-
-	result_others = cur.execute("SELECT main_info_id, atomic_Number, average FROM rloveshhenko$mydbtest.chemical_composition WHERE main_info_id != %s", [id])
-	chem_composition_others = cur.fetchall()
-
-	app.logger.info('Other materials: ' + str(result))
-	startTime = time.time()
-
-	#indexes = chemical_Compare(chem_composition_first, chem_composition_others, other_materials, cur)
-	for mat in other_materials:
-		mat['index'] = simple_Compare(chem_composition_first, getChemicalComposition(mat['id'], chem_composition_others))
-	"""for material in other_materials:
-		material['index'] = chemical_Compare(chem_composition_first, material['id'], cur)"""
-
-	finishTime = time.time()
-	print(other_materials[-1])
-	res = sorted(other_materials, key=getKey)
-	print(res[-1])
-	cur.close()
-	app.logger.info('Time spent: ' + str(finishTime - startTime))
-	return render_template('chemSimilar.html', materials = res, base_material = base_material)
-
-	#return redirect(url_for('material', id = id))
-
 
 # Main Part
 if __name__ == '__main__':

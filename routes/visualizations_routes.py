@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, abort, request, session, flash, redirect, url_for
 import pygal
-from util import loadDataFromFile, writeDataToFile
+from flask import Blueprint, render_template
+
+from utils.common_utils import loadDataFromFile
 
 visualization = Blueprint('visualization', __name__,template_folder='templates')
 
@@ -74,7 +75,6 @@ def manifold_learning():
 
 
 
-	from pygal.style import DarkStyle
 	xy_chart = pygal.XY(stroke=False, x_title='K1, %', y_title='K2, %')
 
 	# pygal_manif = []

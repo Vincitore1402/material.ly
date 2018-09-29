@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, abort, request, session, flash, redirect, url_for
-
 import sys
+
+from flask import Blueprint, render_template, session
+
 sys.path.append('../')
-from db import getConnection
-from util import is_logged_in
+from services.mysql_service import getConnection
+from utils.common_utils import is_logged_in
 sys.path.remove('../')
 
 dashboard_route = Blueprint('dashboard_route', __name__,template_folder='templates')

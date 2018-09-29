@@ -1,17 +1,15 @@
-from flask import Blueprint, render_template, abort, request, session, flash, redirect, url_for
+import sys
+
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for
+
 from forms import ArticleForm
 
-import sys
 sys.path.append('../')
-from db import getConnection
-from util import is_logged_in
+from services.mysql_service import getConnection
+from utils.common_utils import is_logged_in
 sys.path.remove('../')
 
 articles = Blueprint('articles', __name__,template_folder='templates')
-article = Blueprint('article', __name__,template_folder='templates')
-add_article = Blueprint('add_article', __name__,template_folder='templates')
-edit_article = Blueprint('edit_article', __name__,template_folder='templates')
-delete_article = Blueprint('delete_article', __name__,template_folder='templates')
 
 # Articles
 @articles.route('/articles')
@@ -29,7 +27,7 @@ def all_articles():
 		return render_template('articles.html', msg = msg)
 
 # Single Article
-@article.route('/article/<string:id>/')
+@articles.route('/article/<string:id>/')
 def single_article(id):
 	conn = getConnection()
 	cur = conn.cursor()
@@ -41,7 +39,7 @@ def single_article(id):
 
 	return render_template('article.html', article = article)
 
-@add_article.route('/add_article/', methods = ['GET', 'POST'])
+@articles.route('/add_article/', methods = ['GET', 'POST'])
 @is_logged_in
 def addArticle():
 	form = ArticleForm(request.form)
@@ -55,11 +53,11 @@ def addArticle():
 		conn.commit()
 		cur.close()
 		flash('Article Created', 'success')
-		return redirect(url_for('dashboard'))
+		return redirect(url_for('dashboard_route.dashboard'))
 	return render_template('add_article.html', form = form)
 
 # Edit article
-@edit_article.route('/edit_article/<string:id>', methods = ['GET', 'POST'])
+@articles.route('/edit_article/<string:id>', methods = ['GET', 'POST'])
 @is_logged_in
 def editArticle(id):
 	conn = getConnection()
@@ -68,7 +66,7 @@ def editArticle(id):
 	article = cur.fetchone()
 	if (not article):
 		flash('Permission denied', 'danger')
-		return redirect(url_for('dashboard'))
+		return redirect(url_for('dashboard_route.dashboard'))
 	# Get form
 	form = ArticleForm(request.form)
 	# Populate form fields
@@ -85,16 +83,16 @@ def editArticle(id):
 		article = cur.fetchone()
 		if (not article):
 			flash('Permission denied', 'danger')
-			return redirect(url_for('dashboard'))
+			return redirect(url_for('dashboard_route.dashboard'))
 		cur.execute("UPDATE rloveshhenko$mydbtest.articles SET title = %s, body = %s WHERE id = %s", (title, body, id))
 		conn.commit()
 		cur.close()
 		flash('Article Updated', 'success')
-		return redirect(url_for('dashboard'))
+		return redirect(url_for('dashboard_route.dashboard'))
 	return render_template('edit_article.html', form = form)
 
 # Delete article
-@delete_article.route('/delete_article/<string:id>', methods = ['POST'])
+@articles.route('/delete_article/<string:id>', methods = ['POST'])
 @is_logged_in
 def deleteArticle(id):
 	# Delete from DB
@@ -104,9 +102,9 @@ def deleteArticle(id):
 	article = cur.fetchone()
 	if (not article):
 		flash('Permission denied', 'danger')
-		return redirect(url_for('dashboard'))
+		return redirect(url_for('dashboard_route.dashboard'))
 	cur.execute("DELETE FROM rloveshhenko$mydbtest.articles WHERE id = %s", [id])
 	conn.commit()
 	cur.close()
 	flash('Article Deleted', 'success')
-	return redirect(url_for('dashboard'))
+	return redirect(url_for('dashboard_route.dashboard'))
