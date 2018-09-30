@@ -2,25 +2,22 @@ import sys
 
 from flask import Blueprint, render_template, request, session, flash, redirect, url_for
 
-from forms import ArticleForm
+from forms.forms import ArticleForm
 
 sys.path.append('../')
-from services.mysql_service import getConnection
+from services.mysql_service import MySQLService
 from utils.common_utils import is_logged_in
 sys.path.remove('../')
 
 articles = Blueprint('articles', __name__,template_folder='templates')
 
+db = MySQLService()
+
 # Articles
 @articles.route('/articles')
 def all_articles():
-	conn = getConnection()
-	cur = conn.cursor()
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles")
-
-	articles = cur.fetchall()
-	cur.close()
-	if result > 0:
+	articles = db.getAllArticles()
+	if len(articles) > 0:
 		return render_template('articles.html', articles = articles)
 	else:
 		msg = 'No Articles Found'
@@ -29,14 +26,7 @@ def all_articles():
 # Single Article
 @articles.route('/article/<string:id>/')
 def single_article(id):
-	conn = getConnection()
-	cur = conn.cursor()
-
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s", [id])
-
-	article = cur.fetchone()
-	cur.close()
-
+	article = db.getArticleById(id)
 	return render_template('article.html', article = article)
 
 @articles.route('/add_article/', methods = ['GET', 'POST'])
@@ -47,7 +37,7 @@ def addArticle():
 		title = form.title.data
 		body = form.body.data
 
-		conn = getConnection()
+		conn = db.getConnection()
 		cur = conn.cursor()
 		cur.execute("INSERT INTO rloveshhenko$mydbtest.articles(title,body,author) VALUES(%s, %s, %s)", (title,body,session['username']))
 		conn.commit()
@@ -60,7 +50,7 @@ def addArticle():
 @articles.route('/edit_article/<string:id>', methods = ['GET', 'POST'])
 @is_logged_in
 def editArticle(id):
-	conn = getConnection()
+	conn = db.getConnection()
 	cur = conn.cursor()
 	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s", (id,session['username']))
 	article = cur.fetchone()
@@ -95,16 +85,9 @@ def editArticle(id):
 @articles.route('/delete_article/<string:id>', methods = ['POST'])
 @is_logged_in
 def deleteArticle(id):
-	# Delete from DB
-	conn = getConnection()
-	cur = conn.cursor()
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s", (id,session['username']))
-	article = cur.fetchone()
-	if (not article):
+	result = db.deleteArticleById(id, session['username'])
+	if (result == False):
 		flash('Permission denied', 'danger')
 		return redirect(url_for('dashboard_route.dashboard'))
-	cur.execute("DELETE FROM rloveshhenko$mydbtest.articles WHERE id = %s", [id])
-	conn.commit()
-	cur.close()
 	flash('Article Deleted', 'success')
 	return redirect(url_for('dashboard_route.dashboard'))

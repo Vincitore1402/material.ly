@@ -2,6 +2,10 @@ from flask import flash, redirect, url_for, session
 from functools import wraps
 import json
 
+def getConfig():
+	import config.config as importedConfig
+	return importedConfig.config
+
 # Check if user logged in
 def is_logged_in(f):
 	@wraps(f)

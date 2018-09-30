@@ -3,11 +3,15 @@ import sys
 from flask import Blueprint, render_template, redirect, url_for
 
 sys.path.append('../')
-from services.mysql_service import getConnection
+from services.mysql_service import MySQLService
 
 sys.path.remove('../')
 
-import config.config as config
+from utils.common_utils import getConfig
+
+config = getConfig()
+
+db = MySQLService()
 
 materials = Blueprint('materials', __name__,template_folder='templates')
 
@@ -15,7 +19,7 @@ materials = Blueprint('materials', __name__,template_folder='templates')
 @materials.route('/materials/', defaults={'num': 1})
 @materials.route('/materials/page/<int:num>')
 def allMaterials(num):
-	conn = getConnection()
+	conn = db.getConnection()
 	cur = conn.cursor()
 	total = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info")
 	#print (total)
@@ -36,7 +40,7 @@ def allMaterials(num):
 # Material
 @materials.route('/material/<string:id>')
 def singleMaterial(id):
-	conn = getConnection()
+	conn = db.getConnection()
 	cur = conn.cursor()
 	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info WHERE id = %s", [id])
 	material = cur.fetchone()

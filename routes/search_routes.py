@@ -2,17 +2,19 @@ import pygal
 import time
 from flask import Blueprint, render_template, request, current_app
 
-from services.mysql_service import getConnection
+from services.mysql_service import MySQLService
 from utils.chemical_utils import simple_Compare, getChemicalComposition, getKey
 
 searches = Blueprint('searches', __name__, template_folder='templates')
+
+db = MySQLService()
 
 # Default search by name
 @searches.route('/search', methods = ['POST'])
 def default_search():
 	if request.method == 'POST':
 		name = request.form['mat_name']
-		conn = getConnection()
+		conn = db.getConnection()
 		cur = conn.cursor()
 		total = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info WHERE marka like %s or marka = %s", ("%" + name + "%","%" + name + "%"))
 		materials = cur.fetchall()
@@ -21,7 +23,7 @@ def default_search():
 
 @searches.route('/chemical_search/<int:id>', methods = ['POST', 'GET'])
 def chemical_search(id):
-	conn = getConnection()
+	conn = db.getConnection()
 	cur = conn.cursor()
 	name_res = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info where id = %s", [id])
 	base_material = cur.fetchone()

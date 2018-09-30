@@ -5,7 +5,9 @@ import MySQLdb
 import MySQLdb.cursors
 from flask import Flask, render_template, request
 
-import config.config as config
+from utils.common_utils import getConfig
+
+config = getConfig()
 
 app = Flask(__name__)
 
@@ -314,6 +316,6 @@ def page_not_found(e):
 
 # Main Part
 if __name__ == '__main__':
-	import config.config as config
+	config = getConfig()
 	app.secret_key = config.SECRET_KEY
 	app.run(debug=True)

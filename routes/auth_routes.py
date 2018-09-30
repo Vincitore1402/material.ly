@@ -3,14 +3,16 @@ import sys
 from flask import Blueprint, render_template, request, session, flash, redirect, url_for
 from passlib.hash import sha256_crypt
 
-from forms import RegisterForm
+from forms.forms import RegisterForm
 
 sys.path.append('../')
-from services.mysql_service import getConnection
+from services.mysql_service import MySQLService
 from utils.common_utils import is_logged_in
 sys.path.remove('../')
 
 auth = Blueprint('auth', __name__, template_folder='templates')
+
+db = MySQLService()
 
 # Register
 @auth.route('/register', methods = ['GET', 'POST'])
@@ -23,7 +25,7 @@ def register():
 		password = sha256_crypt.encrypt(str(form.password.data))
 
 		#Create cursor
-		conn = getConnection()
+		conn = db.getConnection()
 		cur = conn.cursor()
 		#Execute query
 		user_result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.users WHERE username = %s", [username])
@@ -49,7 +51,7 @@ def login():
 		username = request.form['username']
 		password_candidate = request.form['password']
 		#Create cursor
-		conn = getConnection()
+		conn = db.getConnection()
 		cur = conn.cursor()
 		#Get user by username
 		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.users WHERE username = %s", [username])
