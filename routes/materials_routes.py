@@ -19,22 +19,14 @@ materials = Blueprint('materials', __name__,template_folder='templates')
 @materials.route('/materials/', defaults={'num': 1})
 @materials.route('/materials/page/<int:num>')
 def allMaterials(num):
-	conn = db.getConnection()
-	cur = conn.cursor()
-	total = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info")
-	#print (total)
-	total_page = (int)(total / config.MATERIALS_PER_PAGE) + 1
-	#print (total_page)
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info limit %s,%s", ((num-1)* config.MATERIALS_PER_PAGE, config.MATERIALS_PER_PAGE))
+	result = db.getAllMaterials(num, config.MATERIALS_PER_PAGE)
+	materials = result[0]
+	total_page = result[1]
 
-	#print ((num-1)*MATERIALS_PER_PAGE)
-	if result > 0:
-		materials = cur.fetchall()
-		cur.close()
+	if len(materials) > 0:
 		return render_template('materials.html', materials = materials, page = num, total = total_page)
 	else:
 		msg = 'No Materials Found'
-		cur.close()
 		return render_template('materials.html', msg = msg)
 
 # Material

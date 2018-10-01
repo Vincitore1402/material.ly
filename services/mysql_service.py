@@ -29,6 +29,15 @@ class MySQLService():
 		cur.close()
 		return article
 
+	def getArticleByAuthor(self, author):
+		conn = self.getConnection()
+		cur = conn.cursor()
+		username = session['username']
+		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE author = %s", [author])
+		articles = cur.fetchall()
+		cur.close()
+		return articles
+
 	def getArticleByIdAndAuthor(self, id, author):
 		conn = self.getConnection()
 		cur = conn.cursor()
@@ -71,3 +80,16 @@ class MySQLService():
 		conn.commit()
 		cur.close()
 		return article
+
+	def getAllMaterials(self, numPage, materialsPerPage):
+		conn = self.getConnection()
+		cur = conn.cursor()
+		total = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info")
+		# print (total)
+		total_page = (int)(total / materialsPerPage) + 1
+		# print (total_page)
+		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info limit %s,%s",
+							 ((numPage - 1) * materialsPerPage, materialsPerPage))
+		materials = cur.fetchall()
+		cur.close()
+		return materials, total_page
