@@ -3,6 +3,7 @@ import sys
 from flask import Blueprint, render_template, request, session, flash, redirect, url_for
 
 from forms.forms import ArticleForm
+from models.Article import Article
 
 sys.path.append('../')
 from services.mysql_service import MySQLService
@@ -36,12 +37,11 @@ def addArticle():
 	if request.method == 'POST' and form.validate():
 		title = form.title.data
 		body = form.body.data
+		author = session['username']
 
-		conn = db.getConnection()
-		cur = conn.cursor()
-		cur.execute("INSERT INTO rloveshhenko$mydbtest.articles(title,body,author) VALUES(%s, %s, %s)", (title,body,session['username']))
-		conn.commit()
-		cur.close()
+		article = Article(title, body, author)
+
+		db.addArticle(article)
 		flash('Article Created', 'success')
 		return redirect(url_for('dashboard_route.dashboard'))
 	return render_template('add_article.html', form = form)
@@ -50,10 +50,7 @@ def addArticle():
 @articles.route('/edit_article/<string:id>', methods = ['GET', 'POST'])
 @is_logged_in
 def editArticle(id):
-	conn = db.getConnection()
-	cur = conn.cursor()
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s", (id,session['username']))
-	article = cur.fetchone()
+	article = db.getArticleByIdAndAuthor(id, session['username'])
 	if (not article):
 		flash('Permission denied', 'danger')
 		return redirect(url_for('dashboard_route.dashboard'))
@@ -66,17 +63,17 @@ def editArticle(id):
 	if request.method == 'POST' and form.validate():
 		title = request.form['title']
 		body = request.form['body']
-		# DB cursor
-		conn = getConn()
-		cur = conn.cursor()
-		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s", (id,session['username']))
-		article = cur.fetchone()
+
+		article = db.getArticleByIdAndAuthor(id, session['username'])
+
 		if (not article):
 			flash('Permission denied', 'danger')
 			return redirect(url_for('dashboard_route.dashboard'))
-		cur.execute("UPDATE rloveshhenko$mydbtest.articles SET title = %s, body = %s WHERE id = %s", (title, body, id))
-		conn.commit()
-		cur.close()
+
+		newArticle = Article(title, body, article['author'])
+
+		db.updateArticleById(id, newArticle)
+
 		flash('Article Updated', 'success')
 		return redirect(url_for('dashboard_route.dashboard'))
 	return render_template('edit_article.html', form = form)

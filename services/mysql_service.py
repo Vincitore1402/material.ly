@@ -29,6 +29,17 @@ class MySQLService():
 		cur.close()
 		return article
 
+	def getArticleByIdAndAuthor(self, id, author):
+		conn = self.getConnection()
+		cur = conn.cursor()
+
+		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE id = %s and author=%s",
+							 (id, author))
+
+		article = cur.fetchone()
+		cur.close()
+		return article
+
 	def deleteArticleById(self, id, username):
 		# Delete from DB
 		conn = self.getConnection()
@@ -42,3 +53,21 @@ class MySQLService():
 		conn.commit()
 		cur.close()
 		return True
+
+	def updateArticleById(self, id, article):
+		conn = self.getConnection()
+		cur = conn.cursor()
+		cur.execute("UPDATE rloveshhenko$mydbtest.articles SET title = %s, body = %s WHERE id = %s", (article.title, article.body, id))
+		conn.commit()
+		cur.close()
+		return article
+
+
+	def addArticle(self, article):
+		conn = self.getConnection()
+		cur = conn.cursor()
+		cur.execute("INSERT INTO rloveshhenko$mydbtest.articles(title,body,author) VALUES(%s, %s, %s)",
+					(article.title, article.body, article.author))
+		conn.commit()
+		cur.close()
+		return article
