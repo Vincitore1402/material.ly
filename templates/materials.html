@@ -1,13 +1,11 @@
-{% extends 'layout.html' %}
-
-{% block body %}
-	<div class="text-center">
+{% extends 'layout.html' %} {% block body %}
+<div class="text-center">
 	<h1>Materials:</h1>
 	<br>
 	<div>
 		<ul class="list-group d-flex flex-row flex-wrap">
 			{% for material in materials %}
-				<li class="list-group-item col-md-4"><a href="../../material/{{material.id}}">{{material.classification}} {{material.marka}}</a></li>
+			<li class="list-group-item col-md-4"><a href="../../material/{{material.id}}">{{material.classification}} {{material.marka}}</a></li>
 			{% endfor %}
 		</ul>
 	</div>
@@ -16,27 +14,27 @@
 		<ul class="pagination pagination-sm mx-auto">
 			{% if page == 1 %}
 			<li class="page-item disabled">
-				<a href="{{url_for('materials', num = page - 1)}}" class="page-link">Prev Page</a>
+				<a href="{{url_for('materials.allMaterials', num = page - 1)}}" class="page-link">Prev Page</a>
 			</li>
 			<li class="page-item active">
-				<a href="{{url_for('materials', num = page + 1)}}" class="page-link">Next Page</a>
-			</li>	
+				<a href="{{url_for('materials.allMaterials', num = page + 1)}}" class="page-link">Next Page</a>
+			</li>
 			{% elif page == total %}
-				<li class="page-item active">
-					<a href="{{url_for('materials', num = page - 1)}}" class="page-link">Prev Page</a>
-				</li>
-				<li class="page-item disabled">
-					<a href="{{url_for('materials', num = page + 1)}}" class="page-link">Next Page</a>
-				</li>	
+			<li class="page-item active">
+				<a href="{{url_for('materials.allMaterials', num = page - 1)}}" class="page-link">Prev Page</a>
+			</li>
+			<li class="page-item disabled">
+				<a href="{{url_for('materials.allMaterials', num = page + 1)}}" class="page-link">Next Page</a>
+			</li>
 			{% else %}
-				<li class="page-item">
-					<a href="{{url_for('materials', num = page - 1)}}" class="page-link">Prev Page</a>
-				</li>
-				<li class="page-item active">
-					<a href="{{url_for('materials', num = page + 1)}}" class="page-link">Next Page</a>
-				</li>
+			<li class="page-item">
+				<a href="{{url_for('materials.allMaterials', num = page - 1)}}" class="page-link">Prev Page</a>
+			</li>
+			<li class="page-item active">
+				<a href="{{url_for('materials.allMaterials', num = page + 1)}}" class="page-link">Next Page</a>
+			</li>
 			{% endif %}
 		</ul>
 	</div>
-	</div>
+</div>
 {% endblock %}
