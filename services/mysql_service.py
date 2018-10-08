@@ -32,7 +32,6 @@ class MySQLService():
 	def getArticleByAuthor(self, author):
 		conn = self.getConnection()
 		cur = conn.cursor()
-		username = session['username']
 		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE author = %s", [author])
 		articles = cur.fetchall()
 		cur.close()
