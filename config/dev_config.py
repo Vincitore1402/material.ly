@@ -7,3 +7,5 @@ DEFAULT_CHARSET = 'utf8'
 MATERIALS_PER_PAGE = 50
 
 SECRET_KEY = 'secret123'
+
+PROJECT_DIRECTORY = 'D:/files/Python/myflaskapp/'

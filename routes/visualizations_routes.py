@@ -1,5 +1,5 @@
-import pygal
-from flask import Blueprint, render_template
+import pygal, sys
+from flask import Blueprint, render_template, current_app
 
 from utils.common_utils import loadDataFromFile
 
