@@ -29,7 +29,7 @@ class MySQLService():
 		cur.close()
 		return article
 
-	def getArticleByAuthor(self, author):
+	def getArticlesByAuthor(self, author):
 		conn = self.getConnection()
 		cur = conn.cursor()
 		result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE author = %s", [author])

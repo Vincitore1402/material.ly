@@ -2,6 +2,7 @@ import math
 from utils.common_utils import writeDataToFile
 from services.mysql_service import MySQLService
 from flask import current_app as app
+import numpy as np
 
 db = MySQLService()
 
@@ -141,7 +142,7 @@ def composeDataForChart():
 		'data1' : data,
 		'data2' : data2
 	}
-	writeDataToFile(result, 'chartData.txt')
+	# writeDataToFile(result, 'chartData.txt')
 	return result
 
 # Manifold learning data part
@@ -182,11 +183,9 @@ def getDataForLearning():
 		matInfo.append(str(listInfo[0]) + " " + str(listInfo[1]))
 	npArr = np.array(arrayData)
 
-	# np.savetxt('out.csv', npArr)
-
 	# Saving array to
-	with open('../numpyData.csv', 'wb') as f:
-		np.savetxt(f, npArr, fmt='%.5f')
+	# with open('numpyData.csv', 'wb') as f:
+	# 	np.savetxt(f, npArr, fmt='%.5f')
 
 	print('Gotten data: ')
 	print('numpyArr: ' + str(len(npArr)))

@@ -39,7 +39,7 @@ def manifold_learning():
 	# arr = arr[:]
 
 	# Learning and get 2-dimensional data for plotting on a graph
-	# manif = manifoldLearning.startLearning(dataForLearn)
+	# manif = manifoldLearning.startManifoldLearning(dataForLearn)
 
 	# writeToFile(manif, 'manifData.txt')
 	# manif = loadFromFile('manifData.txt')

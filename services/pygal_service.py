@@ -7,8 +7,8 @@ class PygalService():
 		xy_chart.title = title
 
 		if (type(data) is dict):
-			for key in data:
-				xy_chart.add(key, data[key])
+			for key, value in data.items():
+				xy_chart.add(key, value)
 		else:
 			for item in data:
 				xy_chart.add(item[0], item[1])

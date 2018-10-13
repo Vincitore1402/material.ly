@@ -21,7 +21,6 @@ representation of the data in the low-dimensional space.
 
 # Author: Jake Vanderplas -- <vanderplas@astro.washington.edu>
 
-print(__doc__)
 
 from time import time
 
@@ -35,30 +34,27 @@ import numpy as np
 # Next line to silence pyflakes. This import is needed.
 Axes3D
 
-# # Points from DB
-# data = getVisData()
-# print (data[0])
-
-def startLearning(myX):
+def startManifoldLearning(input):
     # res = np.loadtxt('numpyData.csv', dtype=float, delimiter=';')
 
-    # mask = np.any(np.not_equal(myX, 0.), axis=0)
-    # arr = myX[:,mask]
-
+    # todo check mask
+    # mask = np.any(np.not_equal(input, 0.), axis=0)
+    # arr = input['numpyArr'][:,mask]
+		#
     # arr = np.unique(arr, axis=0)
-
+		#
     # arr = arr[:]
 
 
     n_points = 1000
-    X = myX['numpyArr']
+    X = input['numpyArr']
     print (type(X))
     color = datasets.samples_generator.make_s_curve(n_points, random_state=0)
     
 
     # X, color = datasets.samples_generator.make_s_curve(n_points, random_state=0)
     # print (X[0])
-    # print (myX[0])
+    # print (input[0])
     # print (len(X[0]))
     n_neighbors = 10
     n_components = 2
@@ -111,8 +107,8 @@ def startLearning(myX):
     res['Isomap'] = {
         'x' : Y[:, 0].tolist(),
         'y' : Y[:, 1].tolist(),
-        'ids': myX['ids'],
-        'matInfo': myX['matInfo']
+        'ids': input['ids'],
+        'matInfo': input['matInfo']
     }
     print ('Learning data: ')
     print ('x: ' + str(len(res['Isomap']['x'])))
@@ -137,8 +133,8 @@ def startLearning(myX):
     res['MDS'] = {
         'x' : Y[:, 0].tolist(),
         'y' : Y[:, 1].tolist(),
-        'ids': myX['ids'],
-        'matInfo': myX['matInfo']
+        'ids': input['ids'],
+        'matInfo': input['matInfo']
     }
 
     t0 = time()
@@ -157,8 +153,8 @@ def startLearning(myX):
     res['Spectral Embedding'] = {
         'x' : Y[:, 0].tolist(),
         'y' : Y[:, 1].tolist(),
-        'ids': myX['ids'],
-        'matInfo': myX['matInfo']
+        'ids': input['ids'],
+        'matInfo': input['matInfo']
     }
 
     t0 = time()
@@ -176,8 +172,8 @@ def startLearning(myX):
     res['TSNE'] = {
         'x' : Y[:, 0].tolist(),
         'y' : Y[:, 1].tolist(),
-        'ids': myX['ids'],
-        'matInfo': myX['matInfo']
+        'ids': input['ids'],
+        'matInfo': input['matInfo']
     }
 
     # plt.show()
@@ -193,4 +189,4 @@ def startLearning(myX):
     return res
 
    
-# startLearning()
+# startManifoldLearning()
