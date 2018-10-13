@@ -7,6 +7,7 @@ from utils.common_utils import getConfig
 config = getConfig()
 
 app = Flask(__name__)
+app.secret_key = config.SECRET_KEY
 
 # sys.path.append('./routes')
 from routes.static_pages import index_page, about_page
@@ -32,6 +33,4 @@ def page_not_found(e):
 
 # Main Part
 if __name__ == '__main__':
-	config = getConfig()
-	app.secret_key = config.SECRET_KEY
 	app.run(debug=True)
