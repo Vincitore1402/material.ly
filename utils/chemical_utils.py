@@ -148,17 +148,9 @@ def composeDataForChart():
 # Manifold learning data part
 def getDataForLearning():
 	import numpy as np
-
 	# Getting data from DB
 	conn = db.getConnection()
 	cur = conn.cursor()
-
-	# Select all field from table except of ID
-	# SQL_SELECT = "SELECT "
-	# for i in range(1,118):
-	# 	SQL_SELECT += "`" +str(i) + "`" + ","
-	# SQL_SELECT += "`" +str(118) + "`"
-	# SQL_SELECT += " FROM rloveshhenko$mydbtest.composed_data"
 
 	SQL_SELECT = "SELECT * FROM rloveshhenko$mydbtest.composed_data"
 	SQL_SELECT_INFO = "SELECT classification,marka FROM rloveshhenko$mydbtest.main_info WHERE id in (SELECT id FROM rloveshhenko$mydbtest.composed_data)"
@@ -187,13 +179,6 @@ def getDataForLearning():
 		matInfo.append(str(listInfo[0]) + " " + str(listInfo[1]))
 	npArr = np.array(arrayData)
 
-	# Saving array to
-	# with open('numpyData.csv', 'wb') as f:
-	# 	np.savetxt(f, npArr, fmt='%.5f')
-
-	print('Gotten data: ')
-	print('numpyArr: ' + str(len(npArr)))
-	print('ids: ' + str(len(ids)))
 	return {
 		'numpyArr': npArr,
 		'matInfo': matInfo,

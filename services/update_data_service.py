@@ -1,9 +1,10 @@
 from utils.chemical_utils import getDataForLearning, composeDataForChart
 from utils.common_utils import writeDataToFile
-from services.sckit_learn import startManifoldLearning
+from services.sckit_learn import startManifoldLearning, startRegressionLearning
 from services.mysql_service import MySQLService
 
 from pydash import map_, filter_, reduce_, get
+import numpy as np
 
 db = MySQLService()
 
@@ -24,6 +25,40 @@ class UpdateGraphDataService():
 	def updateYieldStrengthData(self):
 		data = composeDataForChart()
 		writeDataToFile(data, 'chartData.txt')
+
+	def updateYieldStrengthRegressionData(self):
+		conn = db.getConnection()
+		cur = conn.cursor()
+		SQL_SELECT = "SELECT * FROM rloveshhenko$mydbtest.composed_data"
+		SQL_SELECT_INFO = "SELECT classification,marka FROM rloveshhenko$mydbtest.main_info WHERE id in (SELECT id FROM rloveshhenko$mydbtest.composed_data)"
+		cur.execute(SQL_SELECT)
+		data = cur.fetchall()
+		cur.execute(SQL_SELECT_INFO)
+		info = cur.fetchall()
+
+		arrayData = []
+		ids = []
+		for d in data:
+			arr = np.array(list(dict(d).values())[1:]).astype(float)
+			arrayData.append(arr)
+			ids.append(list(dict(d).values())[:1][0])
+
+		matInfo = []
+
+		for i in info:
+			listInfo = list(dict(i).values())
+			matInfo.append(str(listInfo[0]) + " " + str(listInfo[1]))
+		npArr = np.array(arrayData)
+
+		input =  {
+			'numpyArr': npArr,
+			'matInfo': matInfo,
+			'ids': ids
+		}
+
+		# todo
+		# result = startRegressionLearning(input)
+		#writeDataToFile(result, '....')
 
 class GetComposedDataService():
 	def getYieldStrengthToComposedData(self):

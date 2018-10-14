@@ -188,5 +188,6 @@ def startManifoldLearning(input):
     
     return res
 
-   
-# startManifoldLearning()
+def startRegressionLearning(input):
+    arr = input['numpyArr']
+		# todo regression here
