@@ -166,12 +166,16 @@ def getDataForLearning():
 	cur.execute(SQL_SELECT)
 	composed_data = cur.fetchall()
 
+	# new composed_data in DB Fix
+	# composed_data = composed_data[:,:-2]
+
 	cur.execute(SQL_SELECT_INFO)
 	info = cur.fetchall()
 
 	arrayData = []
 	ids = []
 	for d in composed_data:
+		# add [1:-1]
 		arr = np.array(list(dict(d).values())[1:]).astype(float)
 		arrayData.append(arr)
 		ids.append(list(dict(d).values())[:1][0])
