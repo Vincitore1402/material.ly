@@ -3,10 +3,11 @@ from utils.common_utils import writeDataToFile
 from services.sckit_learn import startManifoldLearning, startRegressionLearning
 from services.mysql_service import MySQLService
 
-from pydash import map_, filter_, reduce_, get
+from pydash import map_, filter_, reduce_, get, flatten_deep, flatten
 import numpy as np
 
 db = MySQLService()
+
 
 class UpdateGraphDataService():
 	def updateManifoldLearningData(self):
@@ -17,7 +18,7 @@ class UpdateGraphDataService():
 		for key, value in manifold_data.items():
 			res = []
 			for i in range(0, len(value['x'])):
-				res.append({'value': [value['x'][i],value['y'][i]], 'label': str(value['matInfo'][i])})
+				res.append({'value': [value['x'][i], value['y'][i]], 'label': str(value['matInfo'][i])})
 			data.append((key, res))
 
 		writeDataToFile(data, 'manifPygal.txt')
@@ -30,35 +31,28 @@ class UpdateGraphDataService():
 		conn = db.getConnection()
 		cur = conn.cursor()
 		SQL_SELECT = "SELECT * FROM rloveshhenko$mydbtest.composed_data"
-		SQL_SELECT_INFO = "SELECT classification,marka FROM rloveshhenko$mydbtest.main_info WHERE id in (SELECT id FROM rloveshhenko$mydbtest.composed_data)"
 		cur.execute(SQL_SELECT)
 		data = cur.fetchall()
-		cur.execute(SQL_SELECT_INFO)
-		info = cur.fetchall()
 
-		arrayData = []
-		ids = []
-		for d in data:
-			arr = np.array(list(dict(d).values())[1:]).astype(float)
-			arrayData.append(arr)
-			ids.append(list(dict(d).values())[:1][0])
+		x = np.array(map_(data,
+				lambda it: np.array(list(dict(it).values())[1:-1]).astype(float)
+			)
+		)
+		y = np.array(map_(data,
+				lambda it: np.array(list(dict(it).values())[-1:]).astype(float)
+			)
+		)
 
-		matInfo = []
-
-		for i in info:
-			listInfo = list(dict(i).values())
-			matInfo.append(str(listInfo[0]) + " " + str(listInfo[1]))
-		npArr = np.array(arrayData)
-
-		input =  {
-			'numpyArr': npArr,
-			'matInfo': matInfo,
-			'ids': ids
+		data = {
+			'x': x,
+			'y': y
 		}
 
-		# todo
-		# result = startRegressionLearning(input)
-		#writeDataToFile(result, '....')
+		#'ndarray' is not JSON serializable
+		# writeDataToFile(data, 'regressionData.txt')
+
+		startRegressionLearning(data)
+
 
 class GetComposedDataService():
 	def getYieldStrengthToComposedData(self):
@@ -74,19 +68,23 @@ class GetComposedDataService():
 		ids = cur.fetchall()
 
 		sigmas = map_(ids,
-			lambda item:
-				{'id': item['main_info_id'], 'sigmas': map_(filter_(data,
-					lambda it:
-						it['main_info_id'] == item['main_info_id'] ), lambda x : get(x, 'sigma_t')) }
-		)
+									lambda item:
+									{'id': item['main_info_id'], 'sigmas': map_(filter_(data,
+																																			lambda it:
+																																			it['main_info_id'] == item['main_info_id']),
+																															lambda x: get(x, 'sigma_t'))}
+									)
 
 		new_sigmas = map_(sigmas,
-			lambda item:
-				{ 'id': item['id'], 'sigma': format(reduce_(item['sigmas'], lambda total, x: float(total) + float(x)/len(item['sigmas']), 0), '.2f') }
-		)
+											lambda item:
+											{'id': item['id'], 'sigma': format(
+												reduce_(item['sigmas'], lambda total, x: float(total) + float(x) / len(item['sigmas']), 0),
+												'.2f')}
+											)
 
 		for item in new_sigmas:
-			cur.execute("UPDATE rloveshhenko$mydbtest.composed_data SET sigma_t = %s WHERE id = %s", (item['sigma'], item['id']))
+			cur.execute("UPDATE rloveshhenko$mydbtest.composed_data SET sigma_t = %s WHERE id = %s",
+									(item['sigma'], item['id']))
 			conn.commit()
 
 		cur.close()

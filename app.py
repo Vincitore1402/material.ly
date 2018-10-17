@@ -1,5 +1,3 @@
-import sys
-
 from flask import Flask, render_template
 
 from utils.common_utils import getConfig
@@ -9,7 +7,6 @@ config = getConfig()
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
 
-# sys.path.append('./routes')
 from routes.static_pages import index_page, about_page
 from routes.articles_routes import articles
 from routes.materials_routes import materials
@@ -27,9 +24,15 @@ app.register_blueprint(visualization)
 app.register_blueprint(dashboard_route)
 app.register_blueprint(searches)
 
+
 @app.errorhandler(404)
 def page_not_found(e):
 	return render_template('404.html'), 404
+
+from services.update_data_service import UpdateGraphDataService
+
+service = UpdateGraphDataService()
+service.updateYieldStrengthRegressionData()
 
 # Main Part
 if __name__ == '__main__':
