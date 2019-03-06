@@ -1,29 +1,22 @@
-import sys
+from services.mysql_service import MySQLService
+from utils.common_utils import is_logged_in
 
 from flask import Blueprint, render_template, session
 
-sys.path.append('../')
-from services.mysql_service import MySQLService
-from utils.common_utils import is_logged_in
-sys.path.remove('../')
-
-dashboard_route = Blueprint('dashboard_route', __name__,template_folder='templates')
+dashboard_route = Blueprint('dashboard_route', __name__, template_folder='templates')
 
 db = MySQLService()
 
-# Dashboard
+
 @dashboard_route.route('/dashboard')
 @is_logged_in
 def dashboard():
-	conn = db.getConnection()
-	cur = conn.cursor()
-	username = session['username']
-	result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.articles WHERE author = %s", [username])
+  username = session['username']
 
-	articles = cur.fetchall()
-	cur.close()
-	if result > 0:
-		return render_template('dashboard.html', articles = articles)
-	else:
-		msg = 'No Articles Found'
-		return render_template('dashboard.html', msg = msg)
+  articles = db.get_articles_by_author(username)
+
+  if len(articles) > 0:
+    return render_template('dashboard.html', articles=articles)
+  else:
+    msg = 'No Articles Found'
+    return render_template('dashboard.html', msg=msg)

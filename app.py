@@ -1,12 +1,5 @@
 from flask import Flask, render_template
 
-from utils.common_utils import getConfig
-
-config = getConfig()
-
-app = Flask(__name__)
-app.secret_key = config.SECRET_KEY
-
 from routes.static_pages import index_page, about_page
 from routes.articles_routes import articles
 from routes.materials_routes import materials
@@ -14,6 +7,13 @@ from routes.auth_routes import auth
 from routes.visualizations_routes import visualization
 from routes.dashboard import dashboard_route
 from routes.search_routes import searches
+from utils.common_utils import get_config
+from services.update_data_service import UpdateGraphDataService
+
+config = get_config()
+
+app = Flask(__name__)
+app.secret_key = config.SECRET_KEY
 
 app.register_blueprint(index_page)
 app.register_blueprint(about_page)
@@ -26,14 +26,13 @@ app.register_blueprint(searches)
 
 
 @app.errorhandler(404)
-def page_not_found(e):
-	return render_template('404.html'), 404
+def page_not_found():
+  return render_template('404.html'), 404
 
-from services.update_data_service import UpdateGraphDataService
 
 service = UpdateGraphDataService()
-service.updateYieldStrengthRegressionData()
+service.update_yield_strength_regression_data()
 
 # Main Part
 if __name__ == '__main__':
-	app.run(debug=True)
+  app.run(debug=True)

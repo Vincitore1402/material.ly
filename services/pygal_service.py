@@ -1,12 +1,12 @@
 import pygal
-from pygal.style import DarkStyle
 
-class PygalService():
-	def createXYChart(self, data, title=''):
+class PygalService:
+	@staticmethod
+	def create_xy_chart(data, title=''):
 		xy_chart = pygal.XY(stroke=False)
 		xy_chart.title = title
 
-		if (type(data) is dict):
+		if type(data) is dict:
 			for key, value in data.items():
 				xy_chart.add(key, value)
 		else:
