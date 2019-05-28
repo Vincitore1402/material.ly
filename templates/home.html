@@ -2,11 +2,16 @@
 
 {% block body %}
 	<div class="jumbotron text-center">
-		<h1>Справочник металлов</h1>
-		<p class="lead">С помощью данного сайта вы можете посмотреть информацию об интересующих вас материалах, а также выполнить поиск похожих материалов по химическому составу.</p>
-		{% if session.logged_in == NULL %}
-			<a href="/register" class="btn btn-primary btn-sm">Register</a>
-			<a href="/login" class="btn btn-success btn-sm">Login</a>
-		{% endif %}
+			<h1>Справочник металлов</h1>
+			<p class="lead">С помощью данного сайта вы можете посмотреть информацию об интересующих вас материалах, а также выполнить поиск похожих материалов по химическому составу.</p>
+			{% if session.logged_in == NULL %}
+				<a href="/register" class="btn btn-primary btn-sm">Register</a>
+				<a href="/login" class="btn btn-success btn-sm">Login</a>
+			{% endif %}
+			{% if session.logged_in != NULL %}
+				{% if session['username'] == 'admin' %}
+				<a href="/ADMIN" class="btn btn-success btn-sm">Admin-panel</a>
+				{% endif %}
+			{% endif %}
 	</div>
 {% endblock %}
