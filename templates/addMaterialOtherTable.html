@@ -1,0 +1,171 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+	<h1>Add Material</h1>
+    <br>
+        {% from 'includes/_formhelpers.html' import render_field %}
+    <form method = "POST" action="{{url_for('mat.addMaterialOtherTable')}}">
+        <br>
+
+			<hr>
+			<p><b>Table: Chemical_composition</b></p>
+			<hr>
+
+         <table class="table table-striped table-responsive-md">
+              <tr>
+                <th>Label</th>
+                <th>Input</th>
+              </tr>
+             <tr><td><label> Атомный номер: </label></td><td>{{render_field(form.AtomicNumber, class_="form-control")}}</td> </tr>
+             <tr><td><label> Концентрация: </label></td><td>{{render_field(form.concentration, class_="form-control")}}</td> <tr>
+             <tr><td><label> Минимум: </label></td><td>{{render_field(form.minimum, class_="form-control")}}</td> <tr>
+             <tr><td><label> Максимум: </label></td><td>{{render_field(form.maximum, class_="form-control")}}</td><tr>
+             <tr><td><label> Среднее: </label></td><td>{{render_field(form.average, class_="form-control")}}</td><tr>
+
+    	</table>
+        <input type="submit" name="btn" value="Add chemical composition" class="btn btn-danger">
+    </form>
+
+
+
+
+    <form method = "POST" action="{{url_for('mat.addMaterialOtherTable')}}">
+        <br>
+
+			<hr>
+			<p><b>Table: Critical_temperatur</b></p>
+			<hr>
+
+         <table class="table table-striped table-responsive-md">
+              <tr>
+                <th>Label</th>
+                <th>Input</th>
+              </tr>
+             <tr><td><label>Критическая температура: </label></td><td>{{render_field(form.critical_temperatur, class_="form-control")}}</td> </tr>
+
+    	</table>
+        <input type="submit" name="btn" value="Add critical temperatur" class="btn btn-danger">
+    </form>
+
+
+    <form method = "POST" action="{{url_for('mat.addMaterialOtherTable')}}">
+        <br>
+
+			<hr>
+			<p><b>Table: Mechanical_properties</b></p>
+			<hr>
+
+         <table class="table table-striped table-responsive-md">
+              <tr>
+                <th>Label</th>
+                <th>Input</th>
+              </tr>
+             <tr><td><label> Сортамент: </label></td><td>{{render_field(form.sortament, class_="form-control")}}</td> </tr>
+             <tr><td><label> Размер: </label></td><td>{{render_field(form.razmer, class_="form-control")}}</td> <tr>
+             <tr><td><label> Напряжение: </label></td><td>{{render_field(form.napr, class_="form-control")}}</td> <tr>
+             <tr><td><label> Сигма В: </label></td><td>{{render_field(form.sigma_b, class_="form-control")}}</td><tr>
+             <tr><td><label> Сигма Т: </label></td><td>{{render_field(form.sigma_t, class_="form-control")}}</td><tr>
+             <tr><td><label> Дельта5: </label></td><td>{{render_field(form.delta_5, class_="form-control")}}</td><tr>
+             <tr><td><label> PSI: </label></td><td>{{render_field(form.psi, class_="form-control")}}</td><tr>
+             <tr><td><label> KCU: </label></td><td>{{render_field(form.KCU, class_="form-control")}}</td><tr>
+             <tr><td><label> Термообработка: </label></td><td>{{render_field(form.termo_obrab, class_="form-control")}}</td><tr>
+
+    	</table>
+        <input type="submit" name="btn" value="Add mechanical properties" class="btn btn-danger">
+    </form>
+
+
+    <form method = "POST" action="{{url_for('mat.addMaterialOtherTable')}}">
+        <br>
+
+			<hr>
+			<p><b>Table: Phisical_properties</b></p>
+			<hr>
+
+         <table class="table table-striped table-responsive-md">
+              <tr>
+                <th>Label</th>
+                <th>Input</th>
+              </tr>
+             <tr><td><label> T: </label></td><td>{{render_field(form.T, class_="form-control")}}</td> </tr>
+             <tr><td><label> E: </label></td><td>{{render_field(form.E, class_="form-control")}}</td> <tr>
+             <tr><td><label> Alpha: </label></td><td>{{render_field(form.alpha, class_="form-control")}}</td> <tr>
+             <tr><td><label> Lambda: </label></td><td>{{render_field(form.LAMBDAA, class_="form-control")}}</td><tr>
+             <tr><td><label> ro: </label></td><td>{{render_field(form.ro, class_="form-control")}}</td><tr>
+             <tr><td><label> C: </label></td><td>{{render_field(form.C, class_="form-control")}}</td><tr>
+             <tr><td><label> R: </label></td><td>{{render_field(form.R, class_="form-control")}}</td><tr>
+
+    	</table>
+        <input type="submit" name="btn" value="Add phisical properties" class="btn btn-danger">
+    </form>
+
+
+    <form method = "POST" action="{{url_for('mat.addMaterialOtherTable')}}">
+         <br>
+
+			<hr>
+			<p><b>Table: Table6</b></p>
+			<hr>
+
+         <table class="table table-striped table-responsive-md">
+              <tr>
+                <th>Label</th>
+                <th>Input</th>
+              </tr>
+             <tr><td><label> Property: </label></td><td>{{render_field(form.property, class_="form-control")}}</td> </tr>
+
+    	</table>
+        <input type="submit" name="btn" value="Add table6" class="btn btn-danger">
+    </form>
+
+
+
+    <form method = "POST" action="{{url_for('mat.addMaterialOtherTable')}}">
+            <br>
+
+			<hr>
+			<p><b>Table: Techno_properties</b></p>
+			<hr>
+
+         <table class="table table-striped table-responsive-md">
+              <tr>
+                <th>Label</th>
+                <th>Input</th>
+              </tr>
+             <tr><td><label> Property name: </label></td><td>{{render_field(form.property_name, class_="form-control")}}</td> </tr>
+             <tr><td><label> Property value: </label></td><td>{{render_field(form.property_value, class_="form-control")}}</td> </tr>
+
+    	</table>
+        <input type="submit" name="btn" value="Add techno properties" class="btn btn-danger">
+    </form>
+
+
+    <form method = "POST" action="{{url_for('mat.addMaterialOtherTable')}}">
+          <br>
+
+			<hr>
+			<p><b>Table: Termo_mod</b></p>
+			<hr>
+
+         <table class="table table-striped table-responsive-md">
+              <tr>
+                <th>Label</th>
+                <th>Input</th>
+              </tr>
+             <tr><td><label> Property termo: </label></td><td>{{render_field(form.property_termo, class_="form-control")}}</td> </tr>
+
+    	</table>
+        <input type="submit" name="btn" value="Add termo mod" class="btn btn-danger">
+    </form>
+
+<form method = "POST" >
+        <br><br><br>
+
+        <input type="submit" name="btn" value="Done" class="btn btn-danger">
+
+        <br><br>
+
+
+
+    </form>
+{% endblock %}

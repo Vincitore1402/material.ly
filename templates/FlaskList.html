@@ -1,0 +1,57 @@
+{% extends 'admin/model/list.html' %}
+{% block body %}
+    <h1>Material</h1>
+    {{ super() }}
+{% endblock %}
+
+{% block list_row_actions %}
+    {{ super() }}
+
+    {# Trying to Add a Special Action #}
+    {# Icons you can use: http://getbootstrap.com/components/ #}
+<br>
+<hr>
+    <form class="icon" method="POST">
+        <button  name = "btn"  value = "Chemical"  title="Chemical Composition">
+            <span class="btn btn-success btn-sm">C</span>
+        </button>
+
+
+
+        <button  name = "btn" value = "Temperature"  title="Critical Temperature">
+            <span class="btn btn-success btn-sm">T</span>
+        </button>
+
+
+
+        <button name = "btn" value = "Mechanical"  title="Mechanical Properties">
+            <span class="btn btn-success btn-sm">M</span>
+        </button>
+
+
+
+        <button name = "btn" value = "Physical"  title="Physical Properties">
+            <span class="btn btn-success btn-sm">P</span>
+        </button>
+
+
+        <button name = "btn" value = "Table6" title="Table6">
+            <span class="btn btn-success btn-sm">T6</span>
+        </button>
+
+
+
+        <button name = "btn" value = "TechnoProperties" title="TechnoProperties">
+            <span class="btn btn-success btn-sm">TP</span>
+        </button>
+
+
+
+        <button name = "btn" value = "TermoMode" title="TermoMode">
+            <span class="btn btn-success btn-sm">TM</span>
+        </button>
+
+        <input id="MaterialId" name="MaterialId"  type="hidden" value="{{get_pk_value(row)}}">
+    </form>
+
+{% endblock %}
