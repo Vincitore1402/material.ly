@@ -40,7 +40,7 @@ def register():
 		cur.close()
 
 		flash('You are now registered and can log in', 'success')
-		return redirect(url_for('index'))
+		return redirect(url_for('index_page.index'))
 
 	return render_template('register.html', form = form)
 
@@ -50,6 +50,7 @@ def login():
 		#Ger form fields
 		username = request.form['username']
 		password_candidate = request.form['password']
+
 		#Create cursor
 		conn = db.getConnection()
 		cur = conn.cursor()
@@ -85,6 +86,11 @@ def logout():
 	session.clear()
 	flash('You are now logged out', 'info')
 	return redirect(url_for('auth.login'))
+
+
+
+
+
 
 
 
