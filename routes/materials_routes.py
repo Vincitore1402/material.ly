@@ -1,4 +1,5 @@
 import sys
+import json
 
 from flask import Blueprint, render_template, redirect, url_for
 
@@ -54,9 +55,21 @@ def singleMaterial(id):
 				data = cur.fetchone()
 				chem_elem.append(data['symbol'])
 
-	#print (chem_elem)
-	#print (chem_concetration)
+	print (chem_elem)
+	print (chem_concetration)
 
+	#getting number from chem_concetration
+	chem_concetration_number = [0 for i in range(chem_concetration.__len__())]
+
+	for i in range(chem_concetration.__len__()):
+		for t in chem_concetration[i].split():
+			try:
+				chem_concetration_number[i] = float(t)
+				#chem_concetration_number.insert(i,float(t))
+			except ValueError:
+				pass
+
+	print(chem_concetration_number)
 	# Getting critical temperature
 	result_crit = cur.execute("SELECT * FROM rloveshhenko$mydbtest.critical_temperature WHERE main_info_id = %s", [id])
 	critical_temperature = cur.fetchone()
@@ -86,7 +99,8 @@ def singleMaterial(id):
 
 	if result > 0:
 		return render_template('material.html', material = material, elements = chem_elem, concetration = chem_concetration,
-		critical_temperature = critical_temperature, techno = techno, termo_mode = termo_mode, mech = mech, table6 = table6, physic = physic)
+		critical_temperature = critical_temperature, techno = techno, termo_mode = termo_mode, mech = mech, table6 = table6, physic = physic,
+							   chem_elem = json.dumps(chem_elem), chem_concetration_number = json.dumps(chem_concetration_number), length = chem_elem.__len__())
 	else:
 		msg = 'Material Doesnt Exist'
 		return  redirect(url_for('materials'))
