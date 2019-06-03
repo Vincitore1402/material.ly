@@ -1,0 +1,22 @@
+.mentable{
+    font-size:1vw;
+}
+
+@media (max-width: 1200px){
+    .mentable{
+    font-size:1.3vw;
+    }
+    .number{
+        display:none;
+    }
+    .id{
+        font-size:2.5vw;
+    }
+    .name{
+        display: none;
+    }
+
+    .mass{
+        display: none;
+    }
+}
