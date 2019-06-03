@@ -47,7 +47,7 @@ def login():
       session['logged_in'] = True
       session['username'] = username
       flash('You are now logged in', 'success')
-      return redirect(url_for('materials.allMaterials', num=1))
+      return redirect(url_for('materials.all_materials', num=1))
     else:
       flash('Invalid credentials', 'danger')
       return redirect(url_for('auth.login'))

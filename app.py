@@ -30,8 +30,8 @@ def page_not_found():
   return render_template('404.html'), 404
 
 
-service = UpdateGraphDataService()
-service.update_yield_strength_regression_data()
+# service = UpdateGraphDataService()
+# service.update_yield_strength_regression_data()
 
 # Main Part
 if __name__ == '__main__':

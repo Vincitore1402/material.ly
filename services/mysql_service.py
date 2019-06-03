@@ -104,7 +104,7 @@ class MySQLService:
 
     cur.execute("INSERT INTO rloveshhenko$mydbtest.users(name, email, username, password) VALUES(%s, %s, %s, %s)",
                 (user.name, user.email, user.username, user.password))
-    cur.commit()
+    conn.commit()
     cur.close()
 
     return True
