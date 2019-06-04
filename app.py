@@ -20,6 +20,13 @@ from routes.auth_routes import auth
 from routes.visualizations_routes import visualization
 from routes.dashboard import dashboard_route
 from routes.search_routes import searches
+from utils.common_utils import get_config
+from services.update_data_service import UpdateGraphDataService
+
+config = get_config()
+
+app = Flask(__name__)
+app.secret_key = config.SECRET_KEY
 from routes.admin_routes import adminExample
 from routes.api_routes import api
 
@@ -46,8 +53,11 @@ app.register_blueprint(api)
 
 
 # отлавливает ошибку 404 и выполняет код
+
 @app.errorhandler(404)
 def page_not_found(e):
+  return render_template('404.html'), 404
+def page_not_found():
   return render_template('404.html'), 404
 
 
@@ -317,6 +327,10 @@ admin.add_view(MT6)
 admin.add_view(MTP)
 admin.add_view(MTM)
 admin.add_view(MyModelViewUser(User, db.session))
+
+
+# service = UpdateGraphDataService()
+# service.update_yield_strength_regression_data()
 
 # Main Part
 if __name__ == '__main__':
