@@ -9,7 +9,7 @@ api = Blueprint('api', __name__, template_folder='templates')
 
 @api.route('/api/materials/<string:id>')
 def get_material(id):
-  conn = db.getConnection()
+  conn = db.get_connection()
   cur = conn.cursor()
   cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info WHERE id = %s", [id])
   main_info = cur.fetchone()
