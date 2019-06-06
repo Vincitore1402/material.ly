@@ -14,24 +14,24 @@
 		<ul class="pagination pagination-sm mx-auto">
 			{% if page == 1 %}
 			<li class="page-item disabled">
-				<a href="{{url_for('materials.allMaterials', num = page - 1)}}" class="page-link">Prev Page</a>
+				<a href="{{url_for('materials.all_materials', num = page - 1)}}" class="page-link">Prev Page</a>
 			</li>
 			<li class="page-item active">
-				<a href="{{url_for('materials.allMaterials', num = page + 1)}}" class="page-link">Next Page</a>
+				<a href="{{url_for('materials.all_materials', num = page + 1)}}" class="page-link">Next Page</a>
 			</li>
 			{% elif page == total %}
 			<li class="page-item active">
-				<a href="{{url_for('materials.allMaterials', num = page - 1)}}" class="page-link">Prev Page</a>
+				<a href="{{url_for('materials.all_materials', num = page - 1)}}" class="page-link">Prev Page</a>
 			</li>
 			<li class="page-item disabled">
-				<a href="{{url_for('materials.allMaterials', num = page + 1)}}" class="page-link">Next Page</a>
+				<a href="{{url_for('materials.all_materials', num = page + 1)}}" class="page-link">Next Page</a>
 			</li>
 			{% else %}
 			<li class="page-item">
-				<a href="{{url_for('materials.allMaterials', num = page - 1)}}" class="page-link">Prev Page</a>
+				<a href="{{url_for('materials.all_materials', num = page - 1)}}" class="page-link">Prev Page</a>
 			</li>
 			<li class="page-item active">
-				<a href="{{url_for('materials.allMaterials', num = page + 1)}}" class="page-link">Next Page</a>
+				<a href="{{url_for('materials.all_materials', num = page + 1)}}" class="page-link">Next Page</a>
 			</li>
 			{% endif %}
 		</ul>

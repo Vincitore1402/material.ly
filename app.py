@@ -1,48 +1,34 @@
-from flask import Flask, render_template
-from flask_admin.model.helpers import get_mdict_item_or_list
-from wtforms.validators import required
-
-from utils.common_utils import getConfig
-
 import MySQLdb
-from flask_admin import Admin, expose, BaseView, AdminIndexView
+from flask import Flask
+from flask_admin import Admin, expose, AdminIndexView
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import func
 from datetime import datetime
-from flask_admin.model.base import BaseModelView
 from routes.admin_routes import *
 
 from routes.static_pages import index_page, about_page
-# from routes.articles_routes import articles
+from routes.articles_routes import articles
 from routes.materials_routes import materials
 from routes.auth_routes import auth
 from routes.visualizations_routes import visualization
 from routes.dashboard import dashboard_route
 from routes.search_routes import searches
+from routes.admin_routes import adminExample
+from routes.api_routes import api
 from utils.common_utils import get_config
-from services.update_data_service import UpdateGraphDataService
 
 config = get_config()
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
-from routes.admin_routes import adminExample
-from routes.api_routes import api
-
-config = getConfig()
-
-app = Flask(__name__)
-
-app.secret_key = config.SECRET_KEY
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (config.DB_USER, config.DB_PASSWORD, config.DB_HOST, config.DB_NAME)
 db = SQLAlchemy(app)
 
-# регистрируем их в структуре blueprint
 app.register_blueprint(index_page)
 app.register_blueprint(about_page)
-# app.register_blueprint(articles)
+app.register_blueprint(articles)
 app.register_blueprint(materials)
 app.register_blueprint(auth)
 app.register_blueprint(visualization)
@@ -52,17 +38,11 @@ app.register_blueprint(adminExample)
 app.register_blueprint(api)
 
 
-# отлавливает ошибку 404 и выполняет код
-
 @app.errorhandler(404)
-def page_not_found(e):
-  return render_template('404.html'), 404
 def page_not_found():
   return render_template('404.html'), 404
 
-
 # Models
-
 class Material(db.Model):
   __tablename__ = 'main_info'
 
@@ -168,14 +148,14 @@ class MyModelViewMaterial(ModelView):
   column_searchable_list = ['name']
 
   def on_model_delete(self, model):
-    deleteMaterialAdmin(model.id)
+    delete_material_admin(model.id)
     return super(MyModelViewMaterial, self).on_model_delete(model)
 
   list_template = "FlaskList.html"
   create_template = 'FlaskAdminCreateMaterial.html'
 
   @expose("/", methods=['GET', 'POST'])
-  def editOtherTable(self):
+  def edit_other_table(self):
 
     if request.method == 'POST':
 
@@ -204,7 +184,7 @@ class MyModelViewMaterial(ModelView):
     return self.index_view()
 
   @expose('addMaterial', methods=['GET', 'POST'])
-  def addMaterial(self):
+  def add_material(self):
     form = MaterialFormMain(request.form)
     if request.method == 'POST' and form.validate():
       classification = form.classification.data
@@ -225,11 +205,11 @@ class MyModelViewMaterial(ModelView):
       cur.close()
 
       flash('Table add', 'success')
-      return self.render("addMaterialOtherTable.html", form=getForm())
+      return self.render("addMaterialOtherTable.html", form=get_form())
     return self.render("addMaterial.html", form=form)
 
   @expose('addMaterialOtherTable', methods=['GET', 'POST'])
-  def addMaterialOtherTable(self):
+  def add_material_other_table(self):
     try:
       form = MaterialFormOther(request.form)
       if request.method == 'POST' and form.validate():
@@ -238,10 +218,10 @@ class MyModelViewMaterial(ModelView):
         else:
           dbExample.addOtherTableMaterial(form)
           return self.render("addMaterialOtherTable.html", form=form)
-      return self.render('addMaterialOtherTable.html', form=getForm())
+      return self.render('addMaterialOtherTable.html', form=get_form())
     except MySQLdb._exceptions.OperationalError:
       flash('Заполните все поля', 'danger')
-      return self.render("addMaterialOtherTable.html", form=getForm())
+      return self.render("addMaterialOtherTable.html", form=get_form())
 
 
 class CommonModel(ModelView):
@@ -329,9 +309,5 @@ admin.add_view(MTM)
 admin.add_view(MyModelViewUser(User, db.session))
 
 
-# service = UpdateGraphDataService()
-# service.update_yield_strength_regression_data()
-
-# Main Part
 if __name__ == '__main__':
   app.run(debug=True)
