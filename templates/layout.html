@@ -1,44 +1,48 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<script type="text/javascript" src="http://easychem.org/download/easychem.js"></script>
-  	<link rel="stylesheet" type="text/css" href="http://easychem.org/download/easychem.css" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>MetalApp</title>
-	<link rel="shortcut icon" href="../../static/img/logome.png" type="image/x-icon">
-	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
-	<!-- Not local yet -->
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
-	<link rel="stylesheet" href="../../static/dist/css/bootstrap-cosmo.min.css">
-	<link rel="stylesheet" href="../../static/dist/css/tableMendeleev.css">
-	<script src="http://d3js.org/d3.v3.min.js"> </script>
-	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <meta charset="UTF-8">
+  <script type="text/javascript" src="http://easychem.org/download/easychem.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://easychem.org/download/easychem.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MetalApp</title>
+  <link rel="shortcut icon" href="../../static/img/logome.png" type="image/x-icon">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+  <!-- Not local yet -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+        integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../static/dist/css/bootstrap-cosmo.min.css">
+  <link rel="stylesheet" href="../../static/dist/css/tableMendeleev.css">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 
 <body>
-	{% include 'includes/_navbar.html' %}
-	{% include 'includes/_messages.html' %}
-	<div class="container">
-		{% block body %}{% endblock %}
-	</div>
-	
-	<script
-  src="../../static/dist/js/jquery-3.3.1.js"
-  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-	crossorigin="anonymous"></script>
-	
-	<script src=".././static/dist/js/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+{% include 'includes/_navbar.html' %}
+{% include 'includes/_messages.html' %}
+<div class="container">
+  {% block body %}{% endblock %}
+</div>
+
+<script
+    src="../../static/dist/js/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous"></script>
+
+<script src=".././static/dist/js/popper.min.js"
+        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
 
 
+<script src="../../static/dist/js/bootstrap.min.js"
+        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
 
-	<script src="../../static/dist/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-
-	<!-- Not local yet -->
-	<script src="//cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
-	<script type="text/javascript">
-		CKEDITOR.replace('editor')
-	</script>
+<!-- Not local yet -->
+<script src="//cdn.ckeditor.com/4.7.3/basic/ckeditor.js"></script>
+<script type="text/javascript">
+  CKEDITOR.replace('editor');
+</script>
 </body>
 </html>

@@ -1,16 +1,17 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-	<div class="text-center">
-		<h1>Search result for "{{name}}":</h1>
-		<h5>Found <span class="badge badge-pill badge-secondary">{{materials|length}}</span> materials</h5>
-		<br>
-		<div>
-			<ul class="list-group d-flex flex-row flex-wrap">
-				{% for material in materials %}
-					<li class="list-group-item col-md-4"><a href="../../material/{{material.id}}">{{material.classification}} {{material.marka}}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
+  <div class="text-center">
+    <h1>Search result for "{{ name }}":</h1>
+    <h5>Found <span class="badge badge-pill badge-secondary">{{ materials|length }}</span> materials</h5>
+    <br>
+    <div>
+      <ul class="list-group d-flex flex-row flex-wrap">
+        {% for material in materials %}
+          <li class="list-group-item col-md-4"><a
+              href="../../material/{{ material.id }}">{{ material.classification }} {{ material.marka }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 {% endblock %}

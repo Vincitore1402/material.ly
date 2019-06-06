@@ -13,6 +13,7 @@ def compose_new_sigma(item):
     'new_sigma': (float(item['sigma_t'].split('-')[0]) + float(item['sigma_t'].split('-')[1])) / 2
   }
 
+
 class FixDBService:
   @staticmethod
   def fix_sigma_t_dashes():

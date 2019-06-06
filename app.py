@@ -23,7 +23,8 @@ config = get_config()
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (config.DB_USER, config.DB_PASSWORD, config.DB_HOST, config.DB_NAME)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (
+config.DB_USER, config.DB_PASSWORD, config.DB_HOST, config.DB_NAME)
 db = SQLAlchemy(app)
 
 app.register_blueprint(index_page)
@@ -41,6 +42,7 @@ app.register_blueprint(api)
 @app.errorhandler(404)
 def page_not_found():
   return render_template('404.html'), 404
+
 
 # Models
 class Material(db.Model):
@@ -307,7 +309,6 @@ admin.add_view(MT6)
 admin.add_view(MTP)
 admin.add_view(MTM)
 admin.add_view(MyModelViewUser(User, db.session))
-
 
 if __name__ == '__main__':
   app.run(debug=True)

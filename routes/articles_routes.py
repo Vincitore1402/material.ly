@@ -10,6 +10,7 @@ articles = Blueprint('articles', __name__, template_folder='templates')
 
 db = MySQLService()
 
+
 # Articles
 @articles.route('/articles')
 def all_articles():

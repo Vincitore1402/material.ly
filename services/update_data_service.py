@@ -8,11 +8,14 @@ import numpy as np
 
 db = MySQLService()
 
+
 def extract_x(item):
   return np.array(list(dict(item).values())[1:-1]).astype(float)
 
+
 def extract_y(item):
   return np.array(list(dict(item).values())[-1:]).astype(float)
+
 
 class UpdateGraphDataService:
   @staticmethod
@@ -54,6 +57,7 @@ class UpdateGraphDataService:
     # writeDataToFile(data, 'regressionData.txt')
 
     start_regression_learning(data)
+
 
 # TODO refactor
 

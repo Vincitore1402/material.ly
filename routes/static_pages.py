@@ -13,8 +13,8 @@ def index():
     abort(404)
 
 
-@index_page.route('/ADMIN')
-def ADMIN():
+@index_page.route('/admin')
+def admin():
   return redirect(url_for('admin.index'))
 
 

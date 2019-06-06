@@ -16,14 +16,14 @@ adminExample = Blueprint('adminExample', __name__, template_folder='templates')
 
 
 def delete_material_admin(id):
-	result = dbExample.delete_material_by_id(id)
-	if not result:
-		flash('Error: not deleted', 'danger')
-		return redirect(url_for('admin.index'))
-	flash('Material Deleted', 'success')
-	return redirect(url_for('admin.index'))
+  result = dbExample.delete_material_by_id(id)
+  if not result:
+    flash('Error: not deleted', 'danger')
+    return redirect(url_for('admin.index'))
+  flash('Material Deleted', 'success')
+  return redirect(url_for('admin.index'))
 
 
 def get_form():
-	form = MaterialFormOther(request.form)
-	return form
+  form = MaterialFormOther(request.form)
+  return form
