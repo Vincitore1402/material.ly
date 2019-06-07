@@ -57,4 +57,4 @@ def chemical_search(id):
   print(res[-1])
   cur.close()
   current_app.logger.info('Time spent: ' + str(finish_time - start_time))
-  return render_template('chemSimilar.html', materials=res, base_material=base_material)
+  return render_template('similar_materials.html', materials=res, base_material=base_material)

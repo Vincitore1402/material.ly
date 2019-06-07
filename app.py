@@ -40,7 +40,7 @@ app.register_blueprint(api)
 
 
 @app.errorhandler(404)
-def page_not_found():
+def page_not_found(e):
   return render_template('404.html'), 404
 
 
@@ -153,8 +153,8 @@ class MyModelViewMaterial(ModelView):
     delete_material_admin(model.id)
     return super(MyModelViewMaterial, self).on_model_delete(model)
 
-  list_template = "FlaskList.html"
-  create_template = 'FlaskAdminCreateMaterial.html'
+  list_template = "admin_materials_list.html"
+  create_template = 'admin_create_material.html'
 
   @expose("/", methods=['GET', 'POST'])
   def edit_other_table(self):
@@ -207,8 +207,8 @@ class MyModelViewMaterial(ModelView):
       cur.close()
 
       flash('Table add', 'success')
-      return self.render("addMaterialOtherTable.html", form=get_form())
-    return self.render("addMaterial.html", form=form)
+      return self.render("add_material_other_table.html", form=get_form())
+    return self.render("add_material.html", form=form)
 
   @expose('addMaterialOtherTable', methods=['GET', 'POST'])
   def add_material_other_table(self):
@@ -219,11 +219,11 @@ class MyModelViewMaterial(ModelView):
           return redirect(url_for('mat.editOtherTable'))
         else:
           dbExample.addOtherTableMaterial(form)
-          return self.render("addMaterialOtherTable.html", form=form)
-      return self.render('addMaterialOtherTable.html', form=get_form())
+          return self.render("add_material_other_table.html", form=form)
+      return self.render('add_material_other_table.html', form=get_form())
     except MySQLdb._exceptions.OperationalError:
       flash('Заполните все поля', 'danger')
-      return self.render("addMaterialOtherTable.html", form=get_form())
+      return self.render("add_material_other_table.html", form=get_form())
 
 
 class CommonModel(ModelView):
@@ -279,7 +279,7 @@ class ModelTermoMode(CommonModel):
 class MyModelIndexView(AdminIndexView):
   @expose('/')
   def index(self):
-    return self.render('FlaskAdminHome.html')
+    return self.render('admin_home.html')
 
   def is_accessible(self):
     try:
