@@ -86,9 +86,9 @@ class MySQLService:
     # Delete from DB
     conn = self.get_connection()
     cur = conn.cursor()
-    result = cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info WHERE id = %s", [id])
+    cur.execute("SELECT * FROM rloveshhenko$mydbtest.main_info WHERE id = %s", [id])
     material = cur.fetchone()
-    if (not material):
+    if not material:
       return False
     # cur.execute("DELETE FROM rloveshhenko$mydbtest.main_info WHERE id = %s", [id])
     cur.execute("DELETE FROM rloveshhenko$mydbtest.chemical_composition WHERE main_info_id = %s", [id])
