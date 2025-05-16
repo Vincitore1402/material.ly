@@ -1,4 +1,6 @@
 import math
+import numpy as np
+
 from utils.common_utils import write_data_to_file
 from services.mysql_service import MySQLService
 from flask import current_app as app
@@ -161,38 +163,33 @@ def compose_data_for_chart():
   return result
 
 
-# Manifold learning data part
 def get_data_for_learning():
-  import numpy as np
   # Getting data from DB
   conn = db.get_connection()
   cur = conn.cursor()
 
-  sql_select = "SELECT * FROM rloveshhenko$mydbtest.composed_data"
-  sql_select_info = "SELECT classification,marka FROM rloveshhenko$mydbtest.main_info WHERE id in (SELECT id FROM rloveshhenko$mydbtest.composed_data)"
+  # Fetch composed data and info in a single query
+  sql_select = """
+        SELECT c.*, m.classification, m.marka 
+        FROM rloveshhenko$mydbtest.composed_data c
+        JOIN rloveshhenko$mydbtest.main_info m ON c.id = m.id
+    """
 
   cur.execute(sql_select)
-  composed_data = cur.fetchall()
+  rows = cur.fetchall()
 
-  # new composed_data in DB Fix
-  # composed_data = composed_data[:,:-2]
-
-  cur.execute(sql_select_info)
-  info = cur.fetchall()
-
+  # Process the fetched data
   array_data = []
   ids = []
-  for d in composed_data:
-    # add [1:-1]
-    arr = np.array(list(dict(d).values())[1:]).astype(float)
-    array_data.append(arr)
-    ids.append(list(dict(d).values())[:1][0])
-
   mat_info = []
 
-  for i in info:
-    list_info = list(dict(i).values())
-    mat_info.append(str(list_info[0]) + " " + str(list_info[1]))
+  for row in rows:
+    # Convert row to a dictionary and extract values
+    row_dict = dict(row)
+    ids.append(row_dict['id'])  # Assuming 'id' is the first column
+    array_data.append(np.array(list(row_dict.values())[1:-2]).astype(float))  # Exclude first and last two columns
+    mat_info.append(f"{row_dict['classification']} {row_dict['marka']}")
+
   np_arr = np.array(array_data)
 
   return {
