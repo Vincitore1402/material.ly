@@ -1,5 +1,6 @@
 import math
 from utils.common_utils import write_data_to_file
+
 from services.mysql_service import MySQLService
 from flask import current_app as app
 

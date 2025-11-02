@@ -1,10 +1,25 @@
-import MySQLdb
-import MySQLdb.cursors
+import importlib
 
 from passlib.hash import sha256_crypt
 
 from flask import flash, request
 from utils.common_utils import get_config
+
+_mysql_spec = importlib.util.find_spec('MySQLdb')
+if _mysql_spec is None:
+  class _MySQLdbStub:
+    class _exceptions:
+      OperationalError = Exception
+
+  MySQLdb = _MySQLdbStub()
+  MySQLdb.cursors = type('cursors', (), {'DictCursor': object})
+
+  def _raise_missing_driver(*_args, **_kwargs):
+    raise ModuleNotFoundError('mysqlclient is required to connect to the configured database.')
+
+  MySQLdb.connect = staticmethod(_raise_missing_driver)
+else:
+  MySQLdb = importlib.import_module('MySQLdb')
 
 config = get_config()
 
