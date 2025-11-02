@@ -1,12 +1,13 @@
-import MySQLdb
-from flask import Flask
-from flask_admin import Admin, expose, AdminIndexView
-from flask_sqlalchemy import SQLAlchemy
-from flask_admin.contrib.sqla import ModelView
-from sqlalchemy import func
+import importlib
 from datetime import datetime
-from routes.admin_routes import *
 
+from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask_admin import Admin, expose, AdminIndexView
+from flask_admin.contrib.sqla import ModelView
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+
+from routes.admin_routes import *
 from routes.static_pages import index_page, about_page
 from routes.articles_routes import articles
 from routes.materials_routes import materials
@@ -18,28 +19,91 @@ from routes.admin_routes import adminExample
 from routes.api_routes import api
 from utils.common_utils import get_config
 
+_mysql_spec = importlib.util.find_spec('MySQLdb')
+if _mysql_spec is None:
+  class _MySQLdbStub:
+    class _exceptions:
+      OperationalError = Exception
+
+    @staticmethod
+    def connect(*_args, **_kwargs):
+      raise ModuleNotFoundError('mysqlclient is required to establish database connections.')
+
+  MySQLdb = _MySQLdbStub()
+else:
+  MySQLdb = importlib.import_module('MySQLdb')
+
 config = get_config()
 
-app = Flask(__name__)
-app.secret_key = config.SECRET_KEY
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (
-config.DB_USER, config.DB_PASSWORD, config.DB_HOST, config.DB_NAME)
-db = SQLAlchemy(app)
-
-app.register_blueprint(index_page)
-app.register_blueprint(about_page)
-app.register_blueprint(articles)
-app.register_blueprint(materials)
-app.register_blueprint(auth)
-app.register_blueprint(visualization)
-app.register_blueprint(dashboard_route)
-app.register_blueprint(searches)
-app.register_blueprint(adminExample)
-app.register_blueprint(api)
+db = SQLAlchemy()
 
 
-@app.errorhandler(404)
+def _resolve_database_uri(config_obj, override_uri=None):
+  if override_uri:
+    return override_uri
+
+  uri_from_config = getattr(config_obj, 'SQLALCHEMY_DATABASE_URI', None)
+  if uri_from_config:
+    return uri_from_config
+
+  return 'mysql://%s:%s@%s/%s' % (
+    config_obj.DB_USER, config_obj.DB_PASSWORD, config_obj.DB_HOST, config_obj.DB_NAME)
+
+
+def create_app(config_override=None):
+  app = Flask(__name__)
+
+  override = dict(config_override or {})
+  if 'SECRET_KEY' in override:
+    app.secret_key = override.pop('SECRET_KEY')
+  else:
+    app.secret_key = config.SECRET_KEY
+
+  database_uri_override = override.pop('SQLALCHEMY_DATABASE_URI', None)
+  app.config['SQLALCHEMY_DATABASE_URI'] = _resolve_database_uri(config, database_uri_override)
+  app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
+  app.config.update(override)
+
+  db.init_app(app)
+
+  app.register_blueprint(index_page)
+  app.register_blueprint(about_page)
+  app.register_blueprint(articles)
+  app.register_blueprint(materials)
+  app.register_blueprint(auth)
+  app.register_blueprint(visualization)
+  app.register_blueprint(dashboard_route)
+  app.register_blueprint(searches)
+  app.register_blueprint(adminExample)
+  app.register_blueprint(api)
+
+  admin = Admin(app, "Admin", url='/AdminPanel', index_view=MyModelIndexView())
+
+  global MCC, MCT, MMP, MPP, MT6, MTP, MTM
+  MCC = ModelChemicalComposition(ChemicalComposition, db.session, category='OtherTable', endpoint='ChemicalComposition')
+  MCT = ModelCriticalTemperature(CriticalTemperature, db.session, category='OtherTable',
+                                 endpoint="CriticalTemperature")
+  MMP = ModelMechanicalProperties(MechanicalProperties, db.session, category='OtherTable',
+                                  endpoint='MechanicalProperties')
+  MPP = ModelPhysicalProperties(PhysicalProperties, db.session, category='OtherTable', endpoint='PhysicalProperties')
+  MT6 = ModelTable6(Table6, db.session, category='OtherTable', endpoint="Table6")
+  MTP = ModelTechnoProperties(TechnoProperties, db.session, category='OtherTable', endpoint='TechnoProperties')
+  MTM = ModelTermoMode(TermoMode, db.session, category='OtherTable', endpoint='TermoMode')
+
+  admin.add_view(MyModelViewMaterial(Material, db.session, endpoint='mat'))
+  admin.add_view(MCC)
+  admin.add_view(MCT)
+  admin.add_view(MMP)
+  admin.add_view(MPP)
+  admin.add_view(MT6)
+  admin.add_view(MTP)
+  admin.add_view(MTM)
+  admin.add_view(MyModelViewUser(User, db.session))
+  app.register_error_handler(404, page_not_found)
+
+  return app
+
+
 def page_not_found(e):
   return render_template('404.html'), 404
 
@@ -289,26 +353,16 @@ class MyModelIndexView(AdminIndexView):
       return False
 
 
-MCC = ModelChemicalComposition(ChemicalComposition, db.session, category='OtherTable', endpoint='ChemicalComposition')
-MCT = ModelCriticalTemperature(CriticalTemperature, db.session, category='OtherTable', endpoint="CriticalTemperature")
-MMP = ModelMechanicalProperties(MechanicalProperties, db.session, category='OtherTable',
-                                endpoint='MechanicalProperties')
-MPP = ModelPhysicalProperties(PhysicalProperties, db.session, category='OtherTable', endpoint='PhysicalProperties')
-MT6 = ModelTable6(Table6, db.session, category='OtherTable', endpoint="Table6")
-MTP = ModelTechnoProperties(TechnoProperties, db.session, category='OtherTable', endpoint='TechnoProperties')
-MTM = ModelTermoMode(TermoMode, db.session, category='OtherTable', endpoint='TermoMode')
+MCC = None
+MCT = None
+MMP = None
+MPP = None
+MT6 = None
+MTP = None
+MTM = None
 
-admin = Admin(app, "Admin", url='/AdminPanel', index_view=MyModelIndexView())
 
-admin.add_view(MyModelViewMaterial(Material, db.session, endpoint='mat'))
-admin.add_view(MCC)
-admin.add_view(MCT)
-admin.add_view(MMP)
-admin.add_view(MPP)
-admin.add_view(MT6)
-admin.add_view(MTP)
-admin.add_view(MTM)
-admin.add_view(MyModelViewUser(User, db.session))
+app = create_app()
 
 if __name__ == '__main__':
   app.run(debug=True)
